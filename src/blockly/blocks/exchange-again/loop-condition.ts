@@ -1,0 +1,52 @@
+import Blockly, { BlockSvg } from 'blockly';
+import { ExchangeAgain } from '../images';
+
+Blockly.Blocks.loop_condition = {
+	init() {
+		this.jsonInit(this.definition());
+	},
+	definition() {
+		return {
+			message0: '%1 %2 %3',
+			message1: '%1',
+			args0: [
+				{
+					type: 'field_image',
+					src: ExchangeAgain,
+					width: 25,
+					height: 25,
+					alt: 'exchange',
+				},
+				{
+					type: 'field_label',
+					text: '3. Restart trading conditions',
+				},
+				{
+					type: 'dummy_field',
+					width: '20',
+				},
+			],
+			args1: [
+				{
+					type: 'input_statement',
+					name: 'LOOP_CONDITION',
+				},
+			],
+		};
+	},
+};
+
+Blockly.JavaScript.loop_condition = (block: BlockSvg) => {
+	const stack = Blockly.JavaScript.statementToCode(block, 'LOOP_CONDITION');
+
+	return `
+		function JupLoop() {
+			toast('Checking Loop Conditions...');
+
+			var shouldStopFromOutside = stopBot();
+
+			${stack}
+			return false;
+		}
+	`;
+};
