@@ -63,8 +63,6 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 				outAmount: fromDecimal(outAmount, bestRouteReceiveToken.decimals),
 			};
 
-			console.log(bestRouteProp);
-
 			const propValue = bestRouteProp[routeProp];
 			return jsInterpreter.nativeToPseudo(propValue);
 		})
