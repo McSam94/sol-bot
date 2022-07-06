@@ -90,7 +90,7 @@ const RunPanel: React.FC = () => {
 								<div key={`${error.toString()}_${idx}`} className='text-sm flex flex-col'>
 									<span className='text-xs text-black/50'>{`${new Date().toLocaleTimeString()}`}</span>
 									<span
-										className='text-ellipsis overflow-hidden ...'
+										className='break-all text-ellipsis overflow-hidden ...'
 										data-tip={error.toString()}
 									>{`${error.toString()}`}</span>
 								</div>
