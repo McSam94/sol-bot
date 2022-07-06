@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/** Blockly flyout scrollbar bug */
+svg[display='none'] {
+	display: none;
+}

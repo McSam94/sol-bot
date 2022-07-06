@@ -1,0 +1,83 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="#xQprlR`E[Wk,=ShAm2C">stake</variable>
+  </variables>
+  <block type="exchange_definition" id="wTRfXZiTo|RY5EmuhLRT" x="114" y="93">
+    <statement name="EXCHANGE_PARAMETER">
+      <block type="exchange_parameter" id="8|qpuhBqnalLGXb$/n*$" deletable="false" movable="false">
+        <field name="PAY_TOKEN_LIST">EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v</field>
+        <field name="RECEIVE_TOKEN_LIST">So11111111111111111111111111111111111111112</field>
+        <next>
+          <block type="exchange_slippage" id="GesNq~PQrp07t6o1y(Rr">
+            <value name="SLIPPAGE">
+              <shadow type="math_number" id="P4t85b+tI.9$GjV~r*zG">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <statement name="INITIALIZATION">
+      <block type="variables_set" id="a)2(C6TR-]WSgfT.}Wv+">
+        <field name="VAR" id="#xQprlR`E[Wk,=ShAm2C">stake</field>
+        <value name="VALUE">
+          <block type="math_number" id="f{Tv(1zPP+AB8hq5CTA(">
+            <field name="NUM">0.1</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+    <statement name="EXCHANGE_OPTIONS">
+      <block type="exchange_amount" id="[HPY)~`LMum(s0$6h=rQ">
+        <value name="EXCHANGE_AMOUNT">
+          <block type="variables_get" id=";c:,iO(E0IB@5D0$hXcu">
+            <field name="VAR" id="#xQprlR`E[Wk,=ShAm2C">stake</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="exchange_condition" id="cztYI:@F-MO)}W[)tN0k" x="117" y="378">
+    <statement name="EXCHANGE_CONDITION">
+      <block type="controls_if" id="DkRO*(Fi!qHQoc!f0n[Z">
+        <value name="IF0">
+          <block type="logic_compare" id="2jnXQ8Z2S!}u8q!.GUuj">
+            <field name="OP">LT</field>
+            <value name="A">
+              <block type="route_property" id="ES3Q!Q0Irfw?SytjTU~6">
+                <field name="ROUTE_PROPERTY">outAmount</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="DsfRLC}Wcn]w-!!P=~Dk">
+                <field name="NUM">1</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="exchange_swap" id="p[5WrBhRa*NEjHmi~bXq"></block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="loop_condition" id=";NRPq,**wn4_%aV3p!/z" x="108" y="512">
+    <statement name="LOOP_CONDITION">
+      <block type="math_change" id="HRNUr=J|WC*nl)s-og;x">
+        <field name="VAR" id="#xQprlR`E[Wk,=ShAm2C">stake</field>
+        <value name="DELTA">
+          <shadow type="math_number" id=",4wvL35R#,x=3%Vb7nAO">
+            <field name="NUM">1</field>
+          </shadow>
+          <block type="math_number" id="22@_2e~#*{)d*-8#NDk_">
+            <field name="NUM">0.1</field>
+          </block>
+        </value>
+        <next>
+          <block type="exchange_again" id="`[@fQ_^~9wxb#=Ybrpmn"></block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>

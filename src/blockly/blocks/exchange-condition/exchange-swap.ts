@@ -12,4 +12,4 @@ Blockly.Blocks.exchange_swap = {
 	},
 };
 
-Blockly.JavaScript.exchange_swap = () => `executeSwap()`;
+Blockly.JavaScript.exchange_swap = () => `executeSwap();`;

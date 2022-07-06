@@ -7,10 +7,10 @@ import { interpreterConfig } from '@utils/interpreter';
 import { fetchXml } from '@utils/blockly';
 import { useJupStore } from '@blockly/store/jupiter';
 import { saveAs } from '@blockly/utils/feature';
+import { generateCode } from '@blockly/utils/blockly';
 
 import '@blockly/blocks';
 import '@blockly/fields';
-import { generateCode } from '@blockly/utils/blockly';
 
 interface BlocklyContextProps {
 	workspace: Blockly.WorkspaceSvg | undefined;
@@ -48,10 +48,12 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 			await init(null);
 			const toolboxXml = await fetchXml('/xml/toolbox.xml');
+			const defaultXml = (await fetchXml('/xml/default.xml')) as string;
 			setWorkspace(prevState => {
 				if (prevState) return prevState;
 				// @ts-ignored
 				const injectedWorkspace = Blockly.inject(workspaceElementID.current, { ...opts, toolbox: toolboxXml });
+				Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(defaultXml), injectedWorkspace);
 
 				injectedWorkspace.addChangeListener(() => {
 					return injectedWorkspace;

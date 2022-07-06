@@ -87,10 +87,14 @@ Blockly.JavaScript.exchange_definition = (block: BlockSvg) => {
 	const amountBlock = getChildByType(block, 'exchange_amount');
 	const payToken = paramBlock?.getFieldValue('PAY_TOKEN_LIST');
 	const receiveToken = paramBlock?.getFieldValue('RECEIVE_TOKEN_LIST');
-	const slippage = getInputValue(slippageBlock);
-	const exchangeAmount = getInputValue(amountBlock);
+	const slippage = getInputValue(slippageBlock, 'SLIPPAGE');
+	const exchangeAmount = getInputValue(amountBlock, 'EXCHANGE_AMOUNT');
+
+	const initialization = Blockly.JavaScript.statementToCode(block, 'INITIALIZATION');
 
 	return `
+		${initialization.trim()}
+
 		var inputMint;
 		var outputMint;
 		var slippage;
@@ -99,15 +103,15 @@ Blockly.JavaScript.exchange_definition = (block: BlockSvg) => {
 		function JupDefinition() {
 			toast('Defining Jup Parameters...');
 
-			inputMint = '${payToken}'
-			outputMint = '${receiveToken}'
-			slippage = '${slippage}'
-			amount = '${exchangeAmount}'
+			inputMint = '${payToken}';
+			outputMint = '${receiveToken}';
+			slippage = ${slippage};
+			amount = ${exchangeAmount};
 
 			updateJupParam('inputMint', inputMint);
 			updateJupParam('outputMint', '${receiveToken}');
-			updateJupParam('slippage', '${slippage}')
-			updateJupParam('amount', '${exchangeAmount}');
+			updateJupParam('slippage', ${slippage})
+			updateJupParam('amount', ${exchangeAmount});
 		}
 	`;
 };

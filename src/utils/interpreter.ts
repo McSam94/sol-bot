@@ -32,7 +32,9 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		jsInterpreter.createAsyncFunction(function (callback: Function) {
 			JupStore.getState()
 				.getComputedRoutes()
-				.then(routesInfos => callback(routesInfos));
+				.then(routesInfos => {
+					callback(jsInterpreter.nativeToPseudo(routesInfos?.splice(0, 10)));
+				});
 		})
 	);
 
@@ -46,7 +48,6 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 			if (!bestRoute) return;
 
 			const { inAmount, outAmount } = bestRoute;
-			const {} = JupStore.getState();
 
 			const bestRouteReceiveToken = tokens?.find(token => token.address === blocklyState.outputMint);
 			if (!bestRouteReceiveToken) return;
@@ -80,7 +81,8 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		scope,
 		'stopBot',
 		jsInterpreter.createNativeFunction(function () {
-			return JupStore.getState().botStatus !== 'running';
+			const shouldStop = JupStore.getState().botStatus !== 'running';
+			return shouldStop;
 		})
 	);
 
