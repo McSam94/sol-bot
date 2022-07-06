@@ -21,6 +21,8 @@ const RunPanel: React.FC = () => {
 		[wallet?.adapter]
 	);
 
+	const shouldDisableRun = React.useMemo(() => !connected || botStatus === 'stopping', [connected, botStatus]);
+
 	const onRunClick = React.useMemo(() => {
 		if (botStatus === 'running') {
 			return stopBot;
@@ -38,9 +40,9 @@ const RunPanel: React.FC = () => {
 					<div className='text-md font-semibold text-center mb-2'>{`Status: ${botStatus}`}</div>
 					<button
 						className={classNames('border bg-black text-white px-10 py-2 rounded-lg', {
-							'cursor-not-allowed bg-black/50': !connected,
+							'cursor-not-allowed bg-black/50': shouldDisableRun,
 						})}
-						disabled={!connected}
+						disabled={shouldDisableRun}
 						onClick={onRunClick}
 					>
 						{botStatus === 'running' ? 'Stop' : 'Run'}

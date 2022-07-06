@@ -11,7 +11,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
 			</div>
 			<div className='flex flex-row' style={{ height: 'calc(100vh - 80px)' }}>
 				<div className='flex basis-4/5'>{children}</div>
-				<div className='flex basis-1/5'>
+				<div className='flex basis-1/5 max-w-xs'>
 					<RunPanel />
 				</div>
 			</div>
