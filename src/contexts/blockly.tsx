@@ -53,7 +53,7 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 				if (prevState) return prevState;
 				// @ts-ignored
 				const injectedWorkspace = Blockly.inject(workspaceElementID.current, { ...opts, toolbox: toolboxXml });
-				Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(defaultXml), injectedWorkspace);
+				// Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(defaultXml), injectedWorkspace);
 
 				injectedWorkspace.addChangeListener(() => {
 					return injectedWorkspace;

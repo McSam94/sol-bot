@@ -1,5 +1,6 @@
 import JupStore from '@blockly/store/jupiter';
 import { RouteProp } from '@constants/routes';
+import { RouteInfo } from '@jup-ag/core';
 import Interpreter from 'js-interpreter-npm';
 import { toast } from 'react-toastify';
 import { fromDecimal } from './number';
@@ -42,8 +43,10 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 	jsInterpreter.setProperty(
 		scope,
 		'getBestRouteProp',
-		jsInterpreter.createNativeFunction(function (routeProp: RouteProp) {
-			const { bestRoute, tokens, blocklyState } = JupStore.getState();
+		jsInterpreter.createNativeFunction(function (computedRoutes: Array<RouteInfo>, routeProp: RouteProp) {
+			const nativeComputedRoutes = jsInterpreter.pseudoToNative(computedRoutes);
+			const { tokens, blocklyState } = JupStore.getState();
+			const bestRoute = nativeComputedRoutes[0];
 
 			if (!bestRoute) return;
 
@@ -59,6 +62,8 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 				inAmount: fromDecimal(inAmount, bestRouteReceiveToken.decimals),
 				outAmount: fromDecimal(outAmount, bestRouteReceiveToken.decimals),
 			};
+
+			console.log(bestRouteProp);
 
 			const propValue = bestRouteProp[routeProp];
 			return jsInterpreter.nativeToPseudo(propValue);

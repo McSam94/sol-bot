@@ -24,5 +24,5 @@ Blockly.Blocks.route_property = {
 Blockly.JavaScript.route_property = (block: BlockSvg) => {
 	const routeProp = block.getFieldValue('ROUTE_PROPERTY') as keyof RouteInfo;
 
-	return [`Number(getBestRouteProp('${routeProp}'))`, Blockly.JavaScript.ORDER_ATOMIC];
+	return [`Number(getBestRouteProp(computedRoutes, '${routeProp}'))`, Blockly.JavaScript.ORDER_ATOMIC];
 };

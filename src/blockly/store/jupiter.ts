@@ -148,7 +148,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		const swapResult: SwapResult = await execute({
 			wallet,
 		});
-		console.log('🚀 ~ file: jupiter.ts ~ line 138 ~ exchangeBestRoute: ~ swapResult', swapResult);
+		console.log('🚀 ~ swapResult', swapResult);
 
 		if ('error' in swapResult) {
 			const error: TransactionError | undefined = swapResult.error;
