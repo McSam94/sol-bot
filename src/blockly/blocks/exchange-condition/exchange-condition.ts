@@ -46,7 +46,6 @@ Blockly.JavaScript.exchange_condition = (block: BlockSvg) => {
 			toast('Checking Exchange Conditions...');
 
 			computedRoutes = computeRoutes();
-			console.log(computedRoutes);
 
 			${stack}
 		}

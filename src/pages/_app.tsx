@@ -1,4 +1,5 @@
 import { ToastContainer } from 'react-toastify';
+import ReactTooltip from 'react-tooltip';
 import type { AppProps } from 'next/app';
 import ContextProvider from '@contexts/index';
 import Layout from '@components/layout';
@@ -23,6 +24,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 				draggable
 				pauseOnHover
 			/>
+			<ReactTooltip />
 		</ContextProvider>
 	);
 }

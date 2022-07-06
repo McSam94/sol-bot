@@ -8,6 +8,8 @@ import {
 	SolflareWalletAdapter,
 	TorusWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { createDefaultAuthorizationResultCache, SolanaMobileWalletAdapter } from '@solana-mobile/wallet-adapter-mobile';
 import { NETWORK } from '@constants/connection';
 
@@ -24,7 +26,7 @@ const SolanaProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 			new PhantomWalletAdapter(),
 			new GlowWalletAdapter(),
 			new SlopeWalletAdapter(),
-			new SolflareWalletAdapter({ network: NETWORK }),
+			new SolflareWalletAdapter({ network: NETWORK as WalletAdapterNetwork }),
 			new TorusWalletAdapter(),
 		],
 		[]
@@ -32,7 +34,7 @@ const SolanaProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 	return (
 		<WalletProvider wallets={wallets} autoConnect>
-			{children}
+			<WalletModalProvider>{children}</WalletModalProvider>
 		</WalletProvider>
 	);
 };

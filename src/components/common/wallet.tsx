@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import classNames from 'classnames';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
-const WalletButton: React.FC = () => {
-	return (
-		<WalletModalProvider>
-			<WalletMultiButton style={{ color: 'black' }} />
-		</WalletModalProvider>
-	);
+interface WalletButtonProps {
+	className?: string;
+}
+
+const WalletButton: React.FC<WalletButtonProps> = ({ className }) => {
+	return <WalletMultiButton className={classNames(className)} />;
 };
 
 export default WalletButton;
