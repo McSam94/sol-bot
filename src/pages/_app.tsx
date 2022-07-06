@@ -18,9 +18,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 				autoClose={5000}
 				hideProgressBar={false}
 				newestOnTop={false}
-				closeOnClick
 				rtl={false}
-				pauseOnFocusLoss
+				pauseOnFocusLoss={false}
+				closeOnClick
 				draggable
 				pauseOnHover
 			/>
