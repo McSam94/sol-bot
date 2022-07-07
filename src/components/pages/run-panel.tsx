@@ -56,7 +56,7 @@ const RunPanel: React.FC = () => {
 
 	return (
 		<>
-			<div className='flex flex-col w-full h-full bg-slate-200'>
+			<div className='flex flex-col w-full h-full bg-gray-100'>
 				<div className='flex flex-col border-b h-60 items-center justify-center'>
 					<div className='text-md font-semibold text-center mb-2'>{`Status: ${botStatus}`}</div>
 					<Button disabled={shouldDisableRun} onClick={onRunClick}>
@@ -80,7 +80,7 @@ const RunPanel: React.FC = () => {
 				</div>
 				<div className='flex flex-col px-4 py-2' style={{ height: 'calc(100% - 240px)' }}>
 					<div className='flex flex-col h-1/2 border-b'>
-						<div className='text-md font-bold'>Transactions</div>
+						<div className='text-lg font-bold'>Transactions</div>
 						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
 							{txids?.reverse()?.map(({ dateTime, txid }) => (
 								<div key={txid} className='text-sm flex flex-col'>
@@ -98,7 +98,7 @@ const RunPanel: React.FC = () => {
 						</div>
 					</div>
 					<div className='flex flex-col h-1/2'>
-						<div className='text-md font-bold'>Errors</div>
+						<div className='text-lg font-bold'>Errors</div>
 						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
 							{errors?.reverse()?.map(({ dateTime, error }) => (
 								<div key={dateTime} className='text-sm flex flex-col'>
