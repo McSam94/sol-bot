@@ -1,6 +1,5 @@
-import { getChildByType, getInputValue } from '@blockly/utils/blockly';
-import { NETWORK, RPC_ENDPOINT } from '@constants/connection';
 import Blockly, { BlockSvg } from 'blockly';
+import { getChildByType, getInputValue } from '@utils/blockly';
 import { ExchangeParameters } from '../images';
 
 Blockly.Blocks.exchange_definition = {
@@ -101,7 +100,7 @@ Blockly.JavaScript.exchange_definition = (block: BlockSvg) => {
 		var amount;
 
 		function JupDefinition() {
-			toast('Defining Jup Parameters...');
+			info('Defining Jup Parameters...');
 
 			inputMint = '${payToken}';
 			outputMint = '${receiveToken}';

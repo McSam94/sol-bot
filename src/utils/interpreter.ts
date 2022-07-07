@@ -1,9 +1,12 @@
-import JupStore from '@blockly/store/jupiter';
-import { RouteProp } from '@constants/routes';
-import { RouteInfo } from '@jup-ag/core';
-import Interpreter from 'js-interpreter-npm';
 import { toast } from 'react-toastify';
+import Interpreter from 'js-interpreter-npm';
+import { RouteInfo } from '@jup-ag/core';
+import { RouteProp } from '@constants/routes';
+import JupStore from '@stores/jupiter';
 import { fromDecimal } from './number';
+import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
+import WalletStore from '@stores/wallet';
+import { PublicKey } from '@solana/web3.js';
 
 export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any) {
 	jsInterpreter.setProperty(scope, 'console', jsInterpreter.nativeToPseudo(console));
@@ -12,7 +15,9 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		'alert',
 		jsInterpreter.createNativeFunction((message: string) => alert(message))
 	);
-	jsInterpreter.setProperty(scope, 'toast', jsInterpreter.createNativeFunction(toast.info));
+	jsInterpreter.setProperty(scope, 'info', jsInterpreter.createNativeFunction(toast.info));
+	jsInterpreter.setProperty(scope, 'warn', jsInterpreter.createNativeFunction(toast.warn));
+	jsInterpreter.setProperty(scope, 'error', jsInterpreter.createNativeFunction(toast.error));
 
 	// Update Jup Params
 	jsInterpreter.setProperty(
@@ -43,10 +48,8 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 	jsInterpreter.setProperty(
 		scope,
 		'getBestRouteProp',
-		jsInterpreter.createNativeFunction(function (computedRoutes: Array<RouteInfo>, routeProp: RouteProp) {
-			const nativeComputedRoutes = jsInterpreter.pseudoToNative(computedRoutes);
-			const { tokens, blocklyState } = JupStore.getState();
-			const bestRoute = nativeComputedRoutes[0];
+		jsInterpreter.createNativeFunction(function (routeProp: RouteProp) {
+			const { tokens, blocklyState, bestRoute } = JupStore.getState();
 
 			if (!bestRoute) return;
 
@@ -72,9 +75,9 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 	jsInterpreter.setProperty(
 		scope,
 		'executeSwap',
-		jsInterpreter.createAsyncFunction(function (callback: Function) {
+		jsInterpreter.createAsyncFunction(function (wallet: SignerWalletAdapter, callback: Function) {
 			JupStore.getState()
-				.exchangeBestRoute()
+				.exchange(wallet)
 				.then(() => callback());
 		})
 	);
@@ -95,6 +98,26 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		'idleBot',
 		jsInterpreter.createNativeFunction(function () {
 			JupStore.setState({ botStatus: 'idle' });
+		})
+	);
+
+	// Set Wallet
+	jsInterpreter.setProperty(
+		scope,
+		'getWallet',
+		jsInterpreter.createNativeFunction(function () {
+			const { wallet } = WalletStore.getState();
+			return wallet;
+		})
+	);
+
+	// Get Balance
+	jsInterpreter.setProperty(
+		scope,
+		'getBalance',
+		jsInterpreter.createNativeFunction(function (tokenMint: string) {
+			const balance = WalletStore.getState().getBalance(tokenMint);
+			return balance;
 		})
 	);
 }

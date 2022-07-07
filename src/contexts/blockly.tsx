@@ -2,15 +2,15 @@ import * as React from 'react';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Blockly, { WorkspaceSvg } from 'blockly';
+import { useInterval } from 'react-use';
 import { Interpreter } from 'js-interpreter-npm';
 import { interpreterConfig } from '@utils/interpreter';
-import { fetchXml } from '@utils/blockly';
-import { useJupStore } from '@blockly/store/jupiter';
-import { saveAs } from '@blockly/utils/feature';
-import { generateCode } from '@blockly/utils/blockly';
+import { fetchXml, saveAs, generateCode } from '@utils/blockly';
+import { useJupStore } from '@stores/jupiter';
 
 import '@blockly/blocks';
 import '@blockly/fields';
+import WalletStore, { useWalletStore } from '@stores/wallet';
 
 interface BlocklyContextProps {
 	workspace: Blockly.WorkspaceSvg | undefined;
@@ -35,8 +35,9 @@ const BLOCKLY_WORKSPACE_CONFIG = {
 };
 
 const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-	const { wallet } = useWallet();
-	const { init, setWallet, jupiter, setState, txids } = useJupStore();
+	const { wallet, publicKey } = useWallet();
+	const { init: jupInit, setWallet: setJupWallet, jupiter, setState, txids } = useJupStore();
+	const { init: walletInit, setWallet } = useWalletStore();
 
 	const [workspace, setWorkspace] = React.useState<WorkspaceSvg>();
 
@@ -44,16 +45,15 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 	const renderWorkspace = React.useCallback(
 		async (opts = BLOCKLY_WORKSPACE_CONFIG) => {
-			if (!init) return;
-
-			await init(null);
+			await jupInit();
+			await walletInit();
 			const toolboxXml = await fetchXml('/xml/toolbox.xml');
 			const defaultXml = (await fetchXml('/xml/default.xml')) as string;
 			setWorkspace(prevState => {
 				if (prevState) return prevState;
 				// @ts-ignored
 				const injectedWorkspace = Blockly.inject(workspaceElementID.current, { ...opts, toolbox: toolboxXml });
-				// Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(defaultXml), injectedWorkspace);
+				Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(defaultXml), injectedWorkspace);
 
 				injectedWorkspace.addChangeListener(() => {
 					return injectedWorkspace;
@@ -62,7 +62,7 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 				return injectedWorkspace;
 			});
 		},
-		[init]
+		[jupInit, walletInit]
 	);
 
 	const runInterpreter = React.useCallback((interpreter: typeof Interpreter, oldResolver?: () => void) => {
@@ -113,6 +113,7 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 			}
 
 			const xml = Blockly.Xml.textToDom(readFile);
+			workspace.clear();
 			Blockly.Xml.domToWorkspace(xml, workspace);
 		},
 		[workspace]
@@ -132,11 +133,19 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 		[loadFile]
 	);
 
-	React.useEffect(() => {
-		if (!jupiter || !wallet?.adapter || !setWallet) return;
+	useInterval(() => {
+		if (!publicKey) return;
 
+		WalletStore.getState().getUserBalances(publicKey);
+	}, 10000);
+
+	// set wallet to store
+	React.useEffect(() => {
+		if (!jupiter || !wallet?.adapter || !setJupWallet) return;
+
+		setJupWallet(wallet.adapter as SignerWalletAdapter);
 		setWallet(wallet.adapter as SignerWalletAdapter);
-	}, [jupiter, wallet?.adapter, setWallet]);
+	}, [jupiter, wallet?.adapter, setJupWallet, setWallet]);
 
 	React.useEffect(() => {
 		renderWorkspace();

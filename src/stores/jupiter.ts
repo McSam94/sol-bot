@@ -8,13 +8,13 @@ import { NETWORK, RPC_ENDPOINT } from '@constants/connection';
 import { ROUTES_PROPS } from '@constants/routes';
 
 interface Token {
-	chainId: number; // 101,
-	address: string; // 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-	symbol: string; // 'USDC',
-	name: string; // 'Wrapped USDC',
-	decimals: number; // 6,
-	logoURI: string; // 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW/logo.png',
-	tags: string[]; // [ 'stablecoin' ]
+	chainId: number;
+	address: string;
+	symbol: string;
+	name: string;
+	decimals: number;
+	logoURI: string;
+	tags: string[];
 }
 
 export interface BlocklyState {
@@ -40,21 +40,20 @@ type routePropDropdown = Array<Array<string>>;
 
 export interface JupStoreInt {
 	jupiter: Jupiter | null;
-	wallet: SignerWalletAdapter | null;
 	routeMap: Map<string, string[]> | null;
-	tokens: Array<Token> | null;
 	bestRoute: RouteInfo | null;
+	tokens: Array<Token> | null;
 	blocklyState: BlocklyState;
 	txids: Array<string> | null;
 	errors: Array<TransactionError> | null;
 	botStatus: 'running' | 'stopping' | 'idle';
+	init: () => Promise<void>;
 	getTokensDropdown: () => TokensDropdown | undefined;
 	getAvailablePairedTokenDropdown: (inputMint: string) => TokensDropdown | undefined;
 	getRoutePropDropdown: () => routePropDropdown | undefined;
 	getComputedRoutes: () => Promise<Array<RouteInfo> | null>;
-	init: (walletPubKey: PublicKey | null) => Promise<void>;
 	setWallet: (wallet: SignerWalletAdapter) => void;
-	exchangeBestRoute: () => Promise<void>;
+	exchange: (wallet: SignerWalletAdapter) => Promise<void>;
 }
 
 const initialBlocklyState = {
@@ -71,12 +70,21 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 	jupiter: null,
 	wallet: null,
 	routeMap: null,
-	tokens: null,
 	bestRoute: null,
+	tokens: null,
 	txids: null,
 	errors: null,
 	blocklyState: initialBlocklyState,
 	botStatus: 'idle',
+	init: async () => {
+		const tokens = await fetch(TOKEN_LIST_URL[NETWORK as Cluster]).then(res => res.json());
+		const jupiter = await Jupiter.load({
+			connection: new Connection(RPC_ENDPOINT),
+			cluster: NETWORK as Cluster,
+		});
+		const routeMap = jupiter.getRouteMap();
+		set({ jupiter, tokens, routeMap });
+	},
 	getTokensDropdown: (): TokensDropdown | undefined => get().tokens?.map(token => [token.name, token.address]),
 	getAvailablePairedTokenDropdown: (inputMint: string): TokensDropdown | undefined => {
 		const { tokens, routeMap } = get();
@@ -96,16 +104,6 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		Object.entries(ROUTES_PROPS)
 			.map(([key, value]) => [startCase(key), `${value}`])
 			.filter(Boolean),
-	init: async (walletPubKey: PublicKey | null) => {
-		const tokens = await fetch(TOKEN_LIST_URL[NETWORK as Cluster]).then(res => res.json());
-		const jupiter = await Jupiter.load({
-			connection: new Connection(RPC_ENDPOINT),
-			cluster: NETWORK as Cluster,
-			...(walletPubKey ? { user: walletPubKey } : {}),
-		});
-		const routeMap = jupiter.getRouteMap();
-		set({ jupiter, tokens, routeMap });
-	},
 	getComputedRoutes: async () => {
 		const { blocklyState, tokens, jupiter } = get();
 		const { inputMint, outputMint, amount, slippage } = blocklyState;
@@ -125,6 +123,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 				})
 			)?.routesInfos ?? null;
 
+		// JsInterpreter can't convert RouteInfo properly so passed through zustand
 		set({ bestRoute: computedRoutes?.[0] ?? null });
 		return computedRoutes;
 	},
@@ -132,10 +131,10 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		const { jupiter } = get();
 
 		jupiter?.setUserPublicKey(wallet.publicKey ?? PublicKey.default);
-		set({ wallet, jupiter });
+		set({ jupiter });
 	},
-	exchangeBestRoute: async () => {
-		const { jupiter, bestRoute, wallet } = get();
+	exchange: async (wallet: SignerWalletAdapter) => {
+		const { jupiter, bestRoute } = get();
 
 		if (!jupiter) throw new Error('Jupiter not initialized');
 		if (!bestRoute) throw new Error('Best route not found');

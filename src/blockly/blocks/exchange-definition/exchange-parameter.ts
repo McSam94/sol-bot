@@ -1,6 +1,5 @@
 import Blockly from 'blockly';
-import JupUtil from '@blockly/store/jupiter';
-import JupStore from '@blockly/store/jupiter';
+import JupStore from '@stores/jupiter';
 
 Blockly.Blocks.exchange_parameter = {
 	init() {

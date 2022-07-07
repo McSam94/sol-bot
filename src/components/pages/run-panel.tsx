@@ -1,11 +1,11 @@
 import * as React from 'react';
+import classNames from 'classnames';
 import ReactModal from 'react-modal';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useJupStore } from '@blockly/store/jupiter';
+import { useJupStore } from '@stores/jupiter';
 import { useBlockly } from '@contexts/blockly';
-import WalletButton from '@components/common/wallet';
 import { WALLET_CANT_SKIP_APPROVAL } from '@constants/wallet';
-import classNames from 'classnames';
+import Modal from '@components/common/modal';
 
 const RunPanel: React.FC = () => {
 	const { connected, wallet } = useWallet();
@@ -32,6 +32,11 @@ const RunPanel: React.FC = () => {
 			return shouldWarn ? () => setIsModalOpen(true) : runBot;
 		}
 	}, [botStatus, shouldWarn, stopBot, runBot]);
+
+	const onContinueToRun = React.useCallback(() => {
+		runBot();
+		setIsModalOpen(false);
+	}, [runBot]);
 
 	return (
 		<>
@@ -101,16 +106,9 @@ const RunPanel: React.FC = () => {
 					</div>
 				</div>
 			</div>
-			<ReactModal
-				shouldCloseOnEsc
-				shouldCloseOnOverlayClick
+			<Modal
 				isOpen={isModalOpen}
 				onRequestClose={() => setIsModalOpen(false)}
-				overlayElement={(props, contentElement) => (
-					<div {...props} className={`z-100 ${props.className}`}>
-						{contentElement}
-					</div>
-				)}
 				contentElement={(props, children) => (
 					<div
 						{...props}
@@ -125,11 +123,11 @@ const RunPanel: React.FC = () => {
 					<div className='text-sm'>{`${WALLET_CANT_SKIP_APPROVAL.join(
 						','
 					)} wallet does not support auto-approval. You can still start the bot but you'll need to approve on every transaction.`}</div>
-					<button className='bg-black text-white rounded-lg w-40 py-2 mx-auto' onClick={runBot}>
+					<button className='bg-black text-white rounded-lg w-40 py-2 mx-auto' onClick={onContinueToRun}>
 						Continue to run
 					</button>
 				</div>
-			</ReactModal>
+			</Modal>
 		</>
 	);
 };

@@ -1,4 +1,17 @@
-import { ENV } from '@solana/spl-token-registry';
+import { PublicKey } from '@solana/web3.js';
+import { ENV, TokenInfo } from '@solana/spl-token-registry';
+
+export const WRAPPED_SOL: TokenInfo = {
+	chainId: ENV.MainnetBeta,
+	address: 'So11111111111111111111111111111111111111112',
+	decimals: 9,
+	name: 'Wrapped SOL',
+	symbol: 'SOL',
+	logoURI: '/coins/sol.svg',
+	extensions: {
+		coingeckoId: 'solana',
+	},
+};
 
 export const DEVNET_COIN = [
 	{

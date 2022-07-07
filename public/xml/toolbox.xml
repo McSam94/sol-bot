@@ -30,7 +30,10 @@
 		<block type="exchange_again"></block>
 	</category>
 	<sep></sep>
-	<category name="Route" colour="230">
+	<category name="Wallet" colour="230">
+		<block type="balance"></block>
+	</category>
+	<category name="Route" colour="220">
 		<block type="route_property"></block>
 	</category>
 	<sep></sep>
@@ -232,6 +235,15 @@
 			<value name="TEXT">
 				<shadow type="text">
 					<field name="TEXT">abc</field>
+				</shadow>
+			</value>
+		</block>
+	</category>
+	<category name="UI" colour="240">
+		<block type="console">
+			<value name="TEXT">
+				<shadow type="text">
+					<field name="TEXT">dummy</field>
 				</shadow>
 			</value>
 		</block>
