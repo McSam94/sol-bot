@@ -10,11 +10,14 @@ Blockly.Extensions.register('exchange_condition_check', function (this: BlockSvg
 		if (_this.getRootBlock().type !== 'exchange_condition') {
 			_this.setWarningText('This block need to placed inside `Exchange condition`');
 			Blockly.utils.dom.addClass(_this.getSvgRoot(), 'block--error');
-			BotStore.setState({ isWorkspaceValid: false });
+			BotStore.setState(prevState => ({ ...prevState, invalidBlocks: [...prevState.invalidBlocks, _this.id] }));
 		} else {
 			_this.setWarningText(null);
 			Blockly.utils.dom.removeClass(_this.getSvgRoot(), 'block--error');
-			BotStore.setState({ isWorkspaceValid: true });
+			BotStore.setState(prevState => ({
+				...prevState,
+				invalidBlocks: [...prevState.invalidBlocks.filter(block => block !== _this.id)],
+			}));
 		}
 	});
 });

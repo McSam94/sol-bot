@@ -1,5 +1,5 @@
 import * as React from 'react';
-import classNames from 'classnames';
+import { toast } from 'react-toastify';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useJupStore } from '@stores/jupiter';
 import { useBotStore } from '@stores/bot';
@@ -7,12 +7,11 @@ import { useBlockly } from '@contexts/blockly';
 import { WALLET_CANT_SKIP_APPROVAL } from '@constants/wallet';
 import { Modal } from '@components/common';
 import Button from '@components/common/button';
-import { toast } from 'react-toastify';
 
 const RunPanel: React.FC = () => {
 	const { connected, wallet } = useWallet();
 	const { txids, errors } = useJupStore();
-	const { botStatus, isWorkspaceValid } = useBotStore();
+	const { botStatus, invalidBlocks } = useBotStore();
 	const { isWorkspaceReady, runBot, stopBot, saveWorkspace, loadWorkspace } = useBlockly();
 
 	const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
@@ -25,26 +24,30 @@ const RunPanel: React.FC = () => {
 	);
 
 	const shouldDisableRun = React.useMemo(
-		() => !connected || botStatus === 'stopping' || !isWorkspaceReady,
-		[connected, botStatus, isWorkspaceReady]
+		() => !connected || botStatus === 'stopping' || !isWorkspaceReady || invalidBlocks.length,
+		[connected, botStatus, isWorkspaceReady, invalidBlocks]
 	);
 
-	const onRunClick = React.useMemo(() => {
+	const onRunClick = React.useCallback(() => {
 		if (botStatus === 'stopping') return;
 		if (botStatus === 'running') {
-			return stopBot;
+			stopBot();
+			return;
 		}
 
-		if (!isWorkspaceValid) {
+		if (invalidBlocks.length) {
 			toast.error('Ops! Block(s) were not placed in correct order');
 			return;
 		}
 
 		// idle
-		if (shouldWarn) return () => setIsModalOpen(true);
+		if (shouldWarn) {
+			setIsModalOpen(true);
+			return;
+		}
 
-		return runBot;
-	}, [botStatus, shouldWarn, stopBot, isWorkspaceValid, runBot]);
+		runBot();
+	}, [botStatus, shouldWarn, stopBot, invalidBlocks, runBot]);
 
 	const onContinueToRun = React.useCallback(() => {
 		runBot();

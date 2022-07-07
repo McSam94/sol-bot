@@ -10,11 +10,14 @@ Blockly.Extensions.register('loop_condition_check', function (this: BlockSvg) {
 		if (_this.getRootBlock().type !== 'loop_condition') {
 			_this.setWarningText('This block need to placed inside `Restart Condition`');
 			Blockly.utils.dom.addClass(_this.getSvgRoot(), 'block--error');
-			BotStore.setState({ isWorkspaceValid: false });
+			BotStore.setState(prevState => ({ ...prevState, invalidBlocks: [...prevState.invalidBlocks, _this.id] }));
 		} else {
 			_this.setWarningText(null);
 			Blockly.utils.dom.removeClass(_this.getSvgRoot(), 'block--error');
-			BotStore.setState({ isWorkspaceValid: true });
+			BotStore.setState(prevState => ({
+				...prevState,
+				invalidBlocks: [...prevState.invalidBlocks.filter(block => block !== _this.id)],
+			}));
 		}
 	});
 });

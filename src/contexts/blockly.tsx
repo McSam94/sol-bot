@@ -14,6 +14,7 @@ import '@blockly/blocks';
 import '@blockly/fields';
 import '@blockly/extensions';
 import '@blockly/styles';
+import { devLog } from '@utils/dev';
 
 interface BlocklyContextProps {
 	workspace: Blockly.WorkspaceSvg | undefined;
@@ -91,6 +92,7 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 		setState({ botStatus: 'running' });
 
 		const code = generateCode(Blockly.JavaScript.workspaceToCode(workspace));
+		devLog('🦉 ~ code', code);
 		const interpreter = new Interpreter(code, interpreterConfig);
 
 		await runInterpreter(interpreter);

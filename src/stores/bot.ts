@@ -3,12 +3,12 @@ import create from 'zustand/vanilla';
 
 interface BotStoreInt {
 	botStatus: 'idle' | 'running' | 'stopping';
-	isWorkspaceValid: boolean;
+	invalidBlocks: Array<string>;
 }
 
-const BotStore = create<BotStoreInt>(() => ({
+const BotStore = create<BotStoreInt>((set, get) => ({
 	botStatus: 'idle',
-	isWorkspaceValid: true,
+	invalidBlocks: [],
 }));
 
 export default BotStore;
