@@ -14,6 +14,7 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		'alert',
 		jsInterpreter.createNativeFunction((message: string) => alert(message))
 	);
+
 	jsInterpreter.setProperty(scope, 'info', jsInterpreter.createNativeFunction(toast.info));
 	jsInterpreter.setProperty(scope, 'warn', jsInterpreter.createNativeFunction(toast.warn));
 	jsInterpreter.setProperty(scope, 'error', jsInterpreter.createNativeFunction(toast.error));
@@ -84,7 +85,7 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 	// Check if stop button is clicked
 	jsInterpreter.setProperty(
 		scope,
-		'stopBot',
+		'shouldBotStop',
 		jsInterpreter.createNativeFunction(function () {
 			const shouldStop = BotStore.getState().botStatus !== 'running';
 			return shouldStop;

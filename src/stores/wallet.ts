@@ -4,7 +4,7 @@ import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import create from 'zustand/vanilla';
 import { WRAPPED_SOL } from '@constants/coin';
-import { toDecimal } from '@utils/number';
+import { fromDecimal } from '@utils/number';
 import { convertStoreToHooks } from '@utils/store';
 
 interface TokenAccountInfo {
@@ -36,7 +36,7 @@ const WalletStore = create<WalletStoreInt>((set, get) => ({
 	getUserBalances: async (walletPubKey: PublicKey) => {
 		const { connection } = get();
 
-		const { value: nativeValue } = await connection.getParsedAccountInfo(walletPubKey, 'confirmed');
+		const nativeBalance = await connection.getBalance(walletPubKey, 'confirmed');
 		const { value: accountsValue } = await connection.getParsedTokenAccountsByOwner(
 			walletPubKey,
 			{
@@ -45,8 +45,6 @@ const WalletStore = create<WalletStoreInt>((set, get) => ({
 			'confirmed'
 		);
 
-		const nativeBalanceLamport = nativeValue?.lamports ?? 0;
-		const nativeBalance = toDecimal(nativeBalanceLamport, 9);
 		const initialUserBalancesMap = new Map<string, TokenAccountInfo>();
 		initialUserBalancesMap.set(walletPubKey.toBase58(), {
 			pubkey: walletPubKey,
@@ -56,7 +54,7 @@ const WalletStore = create<WalletStoreInt>((set, get) => ({
 				owner: walletPubKey.toBase58(),
 				state: 'initialized',
 				tokenAmount: {
-					amount: `${nativeBalanceLamport}`,
+					amount: `${fromDecimal(nativeBalance, 9)}`,
 					decimals: 9,
 					uiAmount: nativeBalance,
 					uiAmountString: `${nativeBalance}`,
@@ -84,7 +82,9 @@ const WalletStore = create<WalletStoreInt>((set, get) => ({
 	getBalance: (tokenMint: string) => {
 		const { userBalances } = get();
 
+		// const ataAccount = getATASync(walletPubKey, new PublicKey(tokenMint));
 		const tokenAccountInfo = userBalances.get(tokenMint);
+
 		return tokenAccountInfo?.info.tokenAmount.uiAmountString ?? '0';
 	},
 	setWallet: (wallet: SignerWalletAdapter) => {

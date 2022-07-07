@@ -100,7 +100,7 @@ Blockly.JavaScript.exchange_definition = (block: BlockSvg) => {
 		var amount;
 
 		function JupDefinition() {
-			info('Defining Jup Parameters...');
+			console.log('Defining Jup Parameters...');
 
 			inputMint = '${payToken}';
 			outputMint = '${receiveToken}';

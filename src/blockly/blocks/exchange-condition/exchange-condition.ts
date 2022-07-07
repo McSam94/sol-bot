@@ -43,7 +43,7 @@ Blockly.JavaScript.exchange_condition = (block: BlockSvg) => {
 		var computedRoutes;
 
 		function JupExchange() {
-			info('Checking Exchange Conditions...');
+			console.log('Checking Exchange Conditions...');
 
 			computedRoutes = computeRoutes();
 

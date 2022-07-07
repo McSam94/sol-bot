@@ -8,12 +8,12 @@ import { interpreterConfig } from '@utils/interpreter';
 import { fetchXml, saveAs, generateCode } from '@utils/blockly';
 import WalletStore, { useWalletStore } from '@stores/wallet';
 import { useJupStore } from '@stores/jupiter';
+import { useBotStore } from '@stores/bot';
 
 import '@blockly/blocks';
 import '@blockly/fields';
 import '@blockly/extensions';
 import '@blockly/styles';
-import { useBotStore } from '@stores/bot';
 
 interface BlocklyContextProps {
 	workspace: Blockly.WorkspaceSvg | undefined;
@@ -102,7 +102,7 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 		const convertedDOM = Blockly.Xml.workspaceToDom(workspace);
 		const savedData = Blockly.Xml.domToPrettyText(convertedDOM);
 
-		saveAs({ data: savedData, filename: 'Unsaved_workspace', opts: { type: 'text/xml;charset=utf-8' } });
+		saveAs({ data: savedData, filename: 'untitled', opts: { type: 'text/xml;charset=utf-8' } });
 	}, [workspace]);
 
 	const loadFile = React.useCallback(

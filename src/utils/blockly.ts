@@ -53,7 +53,7 @@ export const generateCode = (code: string) => {
 					shouldLoop = JupLoop();
 				}
 			} catch (error) {
-				toast.error(error)
+				error(error)
 				shouldLoop = false
 			}
 		}
