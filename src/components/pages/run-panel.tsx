@@ -24,7 +24,7 @@ const RunPanel: React.FC = () => {
 	);
 
 	const shouldDisableRun = React.useMemo(
-		() => !connected || botStatus === 'stopping' || !isWorkspaceReady || invalidBlocks.length,
+		() => !connected || botStatus === 'stopping' || !isWorkspaceReady || invalidBlocks.length > 0,
 		[connected, botStatus, isWorkspaceReady, invalidBlocks]
 	);
 
