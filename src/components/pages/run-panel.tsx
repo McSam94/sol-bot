@@ -7,6 +7,7 @@ import { useBlockly } from '@contexts/blockly';
 import { WALLET_CANT_SKIP_APPROVAL } from '@constants/wallet';
 import { Modal } from '@components/common';
 import Button from '@components/common/button';
+import { toast } from 'react-toastify';
 
 const RunPanel: React.FC = () => {
 	const { connected, wallet } = useWallet();
@@ -34,7 +35,10 @@ const RunPanel: React.FC = () => {
 			return stopBot;
 		}
 
-		if (!isWorkspaceValid) return;
+		if (!isWorkspaceValid) {
+			toast.error('Ops! Block(s) were not placed in correct order');
+			return;
+		}
 
 		// idle
 		if (shouldWarn) return () => setIsModalOpen(true);
