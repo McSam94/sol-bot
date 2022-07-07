@@ -6,11 +6,14 @@ import { useInterval } from 'react-use';
 import { Interpreter } from 'js-interpreter-npm';
 import { interpreterConfig } from '@utils/interpreter';
 import { fetchXml, saveAs, generateCode } from '@utils/blockly';
+import WalletStore, { useWalletStore } from '@stores/wallet';
 import { useJupStore } from '@stores/jupiter';
 
 import '@blockly/blocks';
 import '@blockly/fields';
-import WalletStore, { useWalletStore } from '@stores/wallet';
+import '@blockly/extensions';
+import '@blockly/styles';
+import { useBotStore } from '@stores/bot';
 
 interface BlocklyContextProps {
 	workspace: Blockly.WorkspaceSvg | undefined;
@@ -36,7 +39,8 @@ const BLOCKLY_WORKSPACE_CONFIG = {
 
 const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 	const { wallet, publicKey } = useWallet();
-	const { init: jupInit, setWallet: setJupWallet, jupiter, setState, txids } = useJupStore();
+	const { init: jupInit, setWallet: setJupWallet, jupiter } = useJupStore();
+	const { setState } = useBotStore();
 	const { init: walletInit, setWallet } = useWalletStore();
 
 	const [workspace, setWorkspace] = React.useState<WorkspaceSvg>();

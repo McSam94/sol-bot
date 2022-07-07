@@ -19,7 +19,7 @@ Blockly.Blocks.loop_condition = {
 				},
 				{
 					type: 'field_label',
-					text: '3. Restart trading conditions',
+					text: '3. Restart conditions',
 				},
 				{
 					type: 'dummy_field',

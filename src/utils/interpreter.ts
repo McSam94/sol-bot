@@ -1,12 +1,11 @@
-import { toast } from 'react-toastify';
 import Interpreter from 'js-interpreter-npm';
-import { RouteInfo } from '@jup-ag/core';
-import { RouteProp } from '@constants/routes';
-import JupStore from '@stores/jupiter';
-import { fromDecimal } from './number';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
+import { toast } from 'react-toastify';
+import { RouteProp } from '@constants/routes';
 import WalletStore from '@stores/wallet';
-import { PublicKey } from '@solana/web3.js';
+import JupStore from '@stores/jupiter';
+import BotStore from '@stores/bot';
+import { fromDecimal } from '@utils/number';
 
 export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any) {
 	jsInterpreter.setProperty(scope, 'console', jsInterpreter.nativeToPseudo(console));
@@ -87,7 +86,7 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		scope,
 		'stopBot',
 		jsInterpreter.createNativeFunction(function () {
-			const shouldStop = JupStore.getState().botStatus !== 'running';
+			const shouldStop = BotStore.getState().botStatus !== 'running';
 			return shouldStop;
 		})
 	);
@@ -95,9 +94,9 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 	// Update bot status to 'idle'
 	jsInterpreter.setProperty(
 		scope,
-		'idleBot',
+		'stopBot',
 		jsInterpreter.createNativeFunction(function () {
-			JupStore.setState({ botStatus: 'idle' });
+			BotStore.setState({ botStatus: 'idle' });
 		})
 	);
 

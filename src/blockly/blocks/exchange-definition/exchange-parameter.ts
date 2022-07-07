@@ -38,6 +38,7 @@ Blockly.Blocks.exchange_parameter = {
 			],
 			previousStatement: null,
 			nextStatement: null,
+			extensions: ['exchange_definition_check'],
 		};
 	},
 };

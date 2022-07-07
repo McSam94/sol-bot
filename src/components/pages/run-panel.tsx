@@ -1,15 +1,16 @@
 import * as React from 'react';
 import classNames from 'classnames';
-import ReactModal from 'react-modal';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useJupStore } from '@stores/jupiter';
+import { useBotStore } from '@stores/bot';
 import { useBlockly } from '@contexts/blockly';
 import { WALLET_CANT_SKIP_APPROVAL } from '@constants/wallet';
-import Modal from '@components/common/modal';
+import { Modal } from '@components/common';
 
 const RunPanel: React.FC = () => {
 	const { connected, wallet } = useWallet();
-	const { txids, errors, botStatus } = useJupStore();
+	const { txids, errors } = useJupStore();
+	const { botStatus, isWorkspaceValid } = useBotStore();
 	const { runBot, stopBot, saveWorkspace, loadWorkspace } = useBlockly();
 
 	const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
@@ -24,14 +25,18 @@ const RunPanel: React.FC = () => {
 	const shouldDisableRun = React.useMemo(() => !connected || botStatus === 'stopping', [connected, botStatus]);
 
 	const onRunClick = React.useMemo(() => {
+		if (botStatus === 'stopping') return;
 		if (botStatus === 'running') {
 			return stopBot;
 		}
 
-		if (botStatus === 'idle') {
-			return shouldWarn ? () => setIsModalOpen(true) : runBot;
-		}
-	}, [botStatus, shouldWarn, stopBot, runBot]);
+		if (!isWorkspaceValid) return;
+
+		// idle
+		if (shouldWarn) return () => setIsModalOpen(true);
+
+		return runBot;
+	}, [botStatus, shouldWarn, stopBot, isWorkspaceValid, runBot]);
 
 	const onContinueToRun = React.useCallback(() => {
 		runBot();
@@ -75,9 +80,9 @@ const RunPanel: React.FC = () => {
 					<div className='flex flex-col h-1/2 border-b'>
 						<div className='text-md font-bold'>Transactions</div>
 						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
-							{txids?.reverse()?.map((txid, idx) => (
+							{txids?.reverse()?.map(({ dateTime, txid }) => (
 								<div key={txid} className='text-sm flex flex-col'>
-									<span className='text-xs text-black/50'>{`${new Date().toLocaleTimeString()}`}</span>
+									<span className='text-xs text-black/50'>{dateTime}</span>
 									<a
 										className='underline'
 										href={`https://explorer.solana.com/tx/${txid}`}
@@ -93,8 +98,8 @@ const RunPanel: React.FC = () => {
 					<div className='flex flex-col h-1/2'>
 						<div className='text-md font-bold'>Errors</div>
 						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
-							{errors?.reverse()?.map((error, idx) => (
-								<div key={`${error.toString()}_${idx}`} className='text-sm flex flex-col'>
+							{errors?.reverse()?.map(({ dateTime, error }) => (
+								<div key={dateTime} className='text-sm flex flex-col'>
 									<span className='text-xs text-black/50'>{`${new Date().toLocaleTimeString()}`}</span>
 									<span
 										className='break-all text-ellipsis overflow-hidden ...'

@@ -8,6 +8,7 @@ Blockly.Blocks.exchange_swap = {
 		return {
 			message0: 'Execute Swap',
 			previousStatement: null,
+			extensions: ['exchange_condition_check'],
 		};
 	},
 };

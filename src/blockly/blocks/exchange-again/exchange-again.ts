@@ -8,6 +8,7 @@ Blockly.Blocks.exchange_again = {
 		return {
 			message0: 'Restart',
 			previousStatement: null,
+			extensions: ['loop_condition_check'],
 		};
 	},
 };

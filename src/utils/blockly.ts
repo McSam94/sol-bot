@@ -58,7 +58,7 @@ export const generateCode = (code: string) => {
 			}
 		}
 
-		idleBot();
+		stopBot();
 	`;
 };
 

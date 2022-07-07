@@ -1,11 +1,11 @@
-import * as React from 'react';
 import { RPC_ENDPOINT } from '@constants/connection';
 import { Connection, PublicKey, TokenAmount } from '@solana/web3.js';
+import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import create from 'zustand/vanilla';
 import { WRAPPED_SOL } from '@constants/coin';
 import { toDecimal } from '@utils/number';
-import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
+import { convertStoreToHooks } from '@utils/store';
 
 interface TokenAccountInfo {
 	pubkey: PublicKey;
@@ -98,16 +98,4 @@ const WalletStore = create<WalletStoreInt>((set, get) => ({
 }));
 
 export default WalletStore;
-export const useWalletStore = () => {
-	const [state, setState] = React.useState<WalletStoreInt>(WalletStore.getState());
-
-	React.useEffect(() => {
-		WalletStore.subscribe((nextState: WalletStoreInt, prevState: WalletStoreInt) => {
-			if (nextState === prevState) return;
-
-			setState(nextState);
-		});
-	}, []);
-
-	return { ...state, setState: WalletStore.setState };
-};
+export const useWalletStore = convertStoreToHooks<WalletStoreInt>(WalletStore);

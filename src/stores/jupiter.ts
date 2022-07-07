@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { Cluster, Connection, PublicKey, TransactionError } from '@solana/web3.js';
+import { Cluster, Connection, PublicKey, TransactionError as Web3TransactionError } from '@solana/web3.js';
 import { Jupiter, RouteInfo, SwapResult, TOKEN_LIST_URL } from '@jup-ag/core';
 import { SignerWalletAdapter, WalletAdapter } from '@solana/wallet-adapter-base';
 import create from 'zustand/vanilla';
 import startCase from 'lodash.startcase';
 import { NETWORK, RPC_ENDPOINT } from '@constants/connection';
 import { ROUTES_PROPS } from '@constants/routes';
+import { convertStoreToHooks } from '@utils/store';
 
 interface Token {
 	chainId: number;
@@ -38,15 +39,24 @@ type TokensDropdown = Array<Array<string | ImageDropdown>>;
 
 type routePropDropdown = Array<Array<string>>;
 
-export interface JupStoreInt {
+interface TransactionHistory {
+	dateTime: string;
+	txid: string;
+}
+
+interface TransactionError {
+	error: Web3TransactionError;
+	dateTime: string;
+}
+
+interface JupStoreInt {
 	jupiter: Jupiter | null;
 	routeMap: Map<string, string[]> | null;
 	bestRoute: RouteInfo | null;
 	tokens: Array<Token> | null;
 	blocklyState: BlocklyState;
-	txids: Array<string> | null;
+	txids: Array<TransactionHistory> | null;
 	errors: Array<TransactionError> | null;
-	botStatus: 'running' | 'stopping' | 'idle';
 	init: () => Promise<void>;
 	getTokensDropdown: () => TokensDropdown | undefined;
 	getAvailablePairedTokenDropdown: (inputMint: string) => TokensDropdown | undefined;
@@ -75,7 +85,6 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 	txids: null,
 	errors: null,
 	blocklyState: initialBlocklyState,
-	botStatus: 'idle',
 	init: async () => {
 		const tokens = await fetch(TOKEN_LIST_URL[NETWORK as Cluster]).then(res => res.json());
 		const jupiter = await Jupiter.load({
@@ -149,29 +158,21 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		});
 		console.log('🚀 ~ swapResult', swapResult);
 
+		const dateTime = new Date().toLocaleTimeString();
 		if ('error' in swapResult) {
-			const error: TransactionError | undefined = swapResult.error;
+			const { error } = swapResult;
 			if (!error) return;
-			set(prevState => ({ ...prevState, errors: [...(prevState.errors ?? []), error] }));
+			set(prevState => ({ ...prevState, errors: [{ dateTime, error }, ...(prevState.errors ?? [])] }));
 		}
 
 		if ('txid' in swapResult) {
-			set(prevState => ({ ...prevState, txids: [...(prevState.txids ?? []), swapResult.txid] }));
+			set(prevState => ({
+				...prevState,
+				txids: [{ dateTime, txid: swapResult.txid }, ...(prevState.txids ?? [])],
+			}));
 		}
 	},
 }));
 
 export default JupStore;
-export const useJupStore = () => {
-	const [state, setState] = React.useState<JupStoreInt>(JupStore.getState());
-
-	React.useEffect(() => {
-		JupStore.subscribe((nextState: JupStoreInt, prevState: JupStoreInt) => {
-			if (nextState === prevState) return;
-
-			setState(nextState);
-		});
-	}, []);
-
-	return { ...state, setState: JupStore.setState };
-};
+export const useJupStore = convertStoreToHooks<JupStoreInt>(JupStore);

@@ -15,6 +15,7 @@ Blockly.Blocks.exchange_slippage = {
 				},
 			],
 			previousStatement: null,
+			extensions: ['exchange_definition_check'],
 		};
 	},
 };

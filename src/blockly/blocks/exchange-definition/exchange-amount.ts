@@ -15,6 +15,7 @@ Blockly.Blocks.exchange_amount = {
 				},
 			],
 			previousStatement: null,
+			extensions: ['exchange_definition_check'],
 		};
 	},
 };
