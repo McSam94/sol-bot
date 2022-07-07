@@ -1,5 +1,6 @@
 import Blockly, { Block, BlockSvg } from 'blockly';
 import filesaver from 'file-saver';
+import BotStore from '@stores/bot';
 
 export const xmlToStr = (xml: Node) => {
 	const serializer = new XMLSerializer();
@@ -17,18 +18,6 @@ export const fetchXml = (filePath: string) => {
 		xhttp.open('GET', filePath, true);
 		xhttp.send();
 	});
-};
-
-export const getChildByType = (block: BlockSvg, type: string) =>
-	block.getDescendants(true).find(child => child.type === type);
-
-export const getInputValue = (block: BlockSvg | Block | undefined, fieldName: string) => {
-	const inputBlock = block?.getInputTargetBlock(fieldName);
-	const isVariable = inputBlock?.type === 'variables_get';
-
-	const value = Blockly.JavaScript.valueToCode(block, fieldName, Blockly.JavaScript.ORDER_ATOMIC);
-
-	return isVariable ? value : `'${value}'`;
 };
 
 export const generateCode = (code: string) => {
@@ -66,3 +55,39 @@ export const saveAs = ({ data, filename, opts }: { data: string; filename: strin
 	const blob = new Blob([data], opts);
 	filesaver.saveAs(blob, filename);
 };
+
+/** ---Block Utils Start--- */
+export const getChildByType = (block: BlockSvg, type: string) =>
+	block.getDescendants(true).find(child => child.type === type);
+
+export const getInputValue = (block: BlockSvg | Block | undefined, fieldName: string) => {
+	const inputBlock = block?.getInputTargetBlock(fieldName);
+	const isVariable = inputBlock?.type === 'variables_get';
+
+	const value = Blockly.JavaScript.valueToCode(block, fieldName, Blockly.JavaScript.ORDER_ATOMIC);
+
+	return isVariable ? value : `'${value}'`;
+};
+
+export const validateBlockInParent = (block: BlockSvg, parentType: string) => {
+	if (block.getRootBlock().type !== parentType) {
+		block.setWarningText('This block need to placed inside `Exchange Definition`');
+		if (!block.isInFlyout) {
+			Blockly.utils.dom.addClass(block.getSvgRoot(), 'block--error');
+			BotStore.setState(prevState => ({
+				...prevState,
+				invalidBlocks: [...prevState.invalidBlocks, block.id],
+			}));
+		}
+	} else {
+		block.setWarningText(null);
+		if (!block.isInFlyout) {
+			Blockly.utils.dom.removeClass(block.getSvgRoot(), 'block--error');
+			BotStore.setState(prevState => ({
+				...prevState,
+				invalidBlocks: [...prevState.invalidBlocks.filter(_block => _block !== block.id)],
+			}));
+		}
+	}
+};
+/** ---Block Utils End--- */

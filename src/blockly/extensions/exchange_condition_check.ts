@@ -1,4 +1,5 @@
 import BotStore from '@stores/bot';
+import { validateBlockInParent } from '@utils/blockly';
 import Blockly, { BlockSvg } from 'blockly';
 
 Blockly.Extensions.unregister('exchange_condition_check');
@@ -7,17 +8,6 @@ Blockly.Extensions.register('exchange_condition_check', function (this: BlockSvg
 	this.setOnChange(function (event: Blockly.Events.Abstract) {
 		if (event.type !== Blockly.Events.MOVE) return;
 
-		if (_this.getRootBlock().type !== 'exchange_condition') {
-			_this.setWarningText('This block need to placed inside `Exchange condition`');
-			Blockly.utils.dom.addClass(_this.getSvgRoot(), 'block--error');
-			BotStore.setState(prevState => ({ ...prevState, invalidBlocks: [...prevState.invalidBlocks, _this.id] }));
-		} else {
-			_this.setWarningText(null);
-			Blockly.utils.dom.removeClass(_this.getSvgRoot(), 'block--error');
-			BotStore.setState(prevState => ({
-				...prevState,
-				invalidBlocks: [...prevState.invalidBlocks.filter(block => block !== _this.id)],
-			}));
-		}
+		validateBlockInParent(_this, 'exchange_condition');
 	});
 });
