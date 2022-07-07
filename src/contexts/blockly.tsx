@@ -17,6 +17,7 @@ import '@blockly/styles';
 
 interface BlocklyContextProps {
 	workspace: Blockly.WorkspaceSvg | undefined;
+	isWorkspaceReady: boolean;
 	runBot: () => void;
 	stopBot: () => void;
 	saveWorkspace: () => void;
@@ -25,6 +26,7 @@ interface BlocklyContextProps {
 
 const BlocklyContext = React.createContext<BlocklyContextProps>({
 	workspace: undefined,
+	isWorkspaceReady: false,
 	runBot: () => {},
 	stopBot: () => {},
 	saveWorkspace: () => {},
@@ -46,6 +48,8 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 	const [workspace, setWorkspace] = React.useState<WorkspaceSvg>();
 
 	const workspaceElementID = React.useRef<string>('blocklyDiv');
+
+	const isWorkspaceReady = React.useMemo(() => !!workspace, [workspace]);
 
 	const renderWorkspace = React.useCallback(
 		async (opts = BLOCKLY_WORKSPACE_CONFIG) => {
@@ -156,7 +160,7 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 	}, [renderWorkspace]);
 
 	return (
-		<BlocklyContext.Provider value={{ workspace, runBot, stopBot, saveWorkspace, loadWorkspace }}>
+		<BlocklyContext.Provider value={{ workspace, isWorkspaceReady, runBot, stopBot, saveWorkspace, loadWorkspace }}>
 			{children}
 		</BlocklyContext.Provider>
 	);

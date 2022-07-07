@@ -6,12 +6,13 @@ import { useBotStore } from '@stores/bot';
 import { useBlockly } from '@contexts/blockly';
 import { WALLET_CANT_SKIP_APPROVAL } from '@constants/wallet';
 import { Modal } from '@components/common';
+import Button from '@components/common/button';
 
 const RunPanel: React.FC = () => {
 	const { connected, wallet } = useWallet();
 	const { txids, errors } = useJupStore();
 	const { botStatus, isWorkspaceValid } = useBotStore();
-	const { runBot, stopBot, saveWorkspace, loadWorkspace } = useBlockly();
+	const { isWorkspaceReady, runBot, stopBot, saveWorkspace, loadWorkspace } = useBlockly();
 
 	const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
 
@@ -22,7 +23,10 @@ const RunPanel: React.FC = () => {
 		[wallet?.adapter]
 	);
 
-	const shouldDisableRun = React.useMemo(() => !connected || botStatus === 'stopping', [connected, botStatus]);
+	const shouldDisableRun = React.useMemo(
+		() => !connected || botStatus === 'stopping' || !isWorkspaceReady,
+		[connected, botStatus, isWorkspaceReady]
+	);
 
 	const onRunClick = React.useMemo(() => {
 		if (botStatus === 'stopping') return;
@@ -48,19 +52,13 @@ const RunPanel: React.FC = () => {
 			<div className='flex flex-col w-full h-full bg-slate-200'>
 				<div className='flex flex-col border-b h-60 items-center justify-center'>
 					<div className='text-md font-semibold text-center mb-2'>{`Status: ${botStatus}`}</div>
-					<button
-						className={classNames('border bg-black text-white px-10 py-2 rounded-lg', {
-							'cursor-not-allowed bg-black/50': shouldDisableRun,
-						})}
-						disabled={shouldDisableRun}
-						onClick={onRunClick}
-					>
+					<Button disabled={shouldDisableRun} onClick={onRunClick}>
 						{botStatus === 'running' ? 'Stop' : 'Run'}
-					</button>
+					</Button>
 
-					<button className='border bg-black text-white px-10 py-2 rounded-lg' onClick={saveWorkspace}>
+					<Button disabled={!isWorkspaceReady} onClick={saveWorkspace}>
 						Save
-					</button>
+					</Button>
 
 					<input
 						ref={uploadRef}
@@ -69,12 +67,9 @@ const RunPanel: React.FC = () => {
 						className='w-40 hidden'
 						onChange={loadWorkspace}
 					></input>
-					<button
-						className='border bg-black text-white px-10 py-2 rounded-lg'
-						onClick={() => uploadRef.current?.click?.()}
-					>
+					<Button disabled={!isWorkspaceReady} onClick={() => uploadRef.current?.click?.()}>
 						Load
-					</button>
+					</Button>
 				</div>
 				<div className='flex flex-col px-4 py-2' style={{ height: 'calc(100% - 240px)' }}>
 					<div className='flex flex-col h-1/2 border-b'>
