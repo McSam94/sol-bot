@@ -14,10 +14,10 @@ const Home: NextPage = () => {
 				<meta name='description' content='Automate solana exchange without programming.' />
 			</Head>
 			<div id='blocklyDiv' className='h-full w-full'>
-				{!workspace ? (
+				{true ? (
 					<div className='flex flex-row h-full'>
 						<div className='animate-pulse h-full w-[181px] bg-gray-300' />
-						<div className='flex items-center'>
+						<div className='flex'>
 							<WorkspaceSkeleton />
 						</div>
 					</div>
