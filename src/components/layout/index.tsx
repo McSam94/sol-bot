@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Image from 'next/image';
-import { Wallet } from './common';
-import RunPanel from './pages/run-panel';
+import { Wallet } from '../common';
+import RunPanel from './run-panel';
 
 const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
 	return (

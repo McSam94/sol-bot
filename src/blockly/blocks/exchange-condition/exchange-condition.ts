@@ -13,8 +13,8 @@ Blockly.Blocks.exchange_condition = {
 				{
 					type: 'field_image',
 					src: ExchangeCondition,
-					width: 15,
-					height: 15,
+					width: 25,
+					height: 25,
 					alt: 'Exchange',
 				},
 				{

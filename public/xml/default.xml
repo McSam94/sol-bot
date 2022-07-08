@@ -38,7 +38,7 @@
       </block>
     </statement>
   </block>
-  <block type="exchange_condition" id="cztYI:@F-MO)}W[)tN0k" x="117" y="378">
+  <block type="exchange_condition" id="cztYI:@F-MO)}W[)tN0k" x="114" y="378">
     <statement name="EXCHANGE_CONDITION">
       <block type="controls_if" id="DkRO*(Fi!qHQoc!f0n[Z">
         <value name="IF0">
@@ -62,7 +62,7 @@
       </block>
     </statement>
   </block>
-  <block type="loop_condition" id=";NRPq,**wn4_%aV3p!/z" x="108" y="512">
+  <block type="loop_condition" id=";NRPq,**wn4_%aV3p!/z" x="114" y="544">
     <statement name="LOOP_CONDITION">
       <block type="math_change" id="HRNUr=J|WC*nl)s-og;x">
         <field name="VAR" id="#xQprlR`E[Wk,=ShAm2C">stake</field>

@@ -18,8 +18,8 @@ Blockly.Blocks.exchange_definition = {
 				{
 					type: 'field_image',
 					src: ExchangeParameters,
-					width: 15,
-					height: 15,
+					width: 25,
+					height: 25,
 					alt: 'Exchange',
 				},
 				{
