@@ -3,8 +3,8 @@ import * as React from 'react';
 const WorkspaceSkeleton: React.FC = () => {
 	return (
 		<svg
-			width='600'
-			height='800'
+			width='100%'
+			height='100%'
 			viewBox={`0 0 600 800`}
 			fill='none'
 			preserveAspectRatio='none'
@@ -13,7 +13,7 @@ const WorkspaceSkeleton: React.FC = () => {
 			transform='scale(1)'
 		>
 			<g className='blocklyBlockCanvas'>
-				<g data-id='wTRfXZiTo|RY5EmuhLRT' className='blocklyDraggable' transform='translate(114,93)'>
+				<g data-id='wTRfXZiTo|RY5EmuhLRT' className='blocklyDraggable' transform='translate(114,55)'>
 					<path
 						className='blocklyPathDark'
 						transform='translate(1,1)'
@@ -631,7 +631,7 @@ const WorkspaceSkeleton: React.FC = () => {
 						></image>
 					</g>
 				</g>
-				<g data-id=';NRPq,**wn4_%aV3p!/z' className='blocklyDraggable' transform='translate(114,544)'>
+				<g data-id=';NRPq,**wn4_%aV3p!/z' className='blocklyDraggable' transform='translate(114,537)'>
 					<path
 						className='blocklyPathDark'
 						transform='translate(1,1)'
