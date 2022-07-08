@@ -3,9 +3,9 @@ import * as React from 'react';
 const WorkspaceSkeleton: React.FC = () => {
 	return (
 		<svg
-			width='455'
+			width='600'
 			height='800'
-			viewBox={`0 0 455 800`}
+			viewBox={`0 0 600 800`}
 			fill='none'
 			preserveAspectRatio='none'
 			xmlns='http://www.w3.org/2000/svg'
