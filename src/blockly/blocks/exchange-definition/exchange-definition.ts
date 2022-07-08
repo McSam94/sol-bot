@@ -76,6 +76,7 @@ Blockly.Blocks.exchange_definition = {
 					name: 'EXCHANGE_AMOUNT',
 				},
 			],
+			colour: '#020029',
 			extensions: ['exchange_amount_check'],
 		};
 	},

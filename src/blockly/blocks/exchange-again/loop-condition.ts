@@ -32,6 +32,7 @@ Blockly.Blocks.loop_condition = {
 					name: 'LOOP_CONDITION',
 				},
 			],
+			colour: '#020029',
 		};
 	},
 };

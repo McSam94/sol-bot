@@ -22,6 +22,7 @@ Blockly.Blocks.toast = {
 					name: 'TEXT',
 				},
 			],
+			colour: 215,
 			previousStatement: null,
 			nextStatement: null,
 		};

@@ -36,6 +36,7 @@ Blockly.Blocks.exchange_parameter = {
 						],
 				},
 			],
+			colour: '#4E6882',
 			previousStatement: null,
 			nextStatement: null,
 			extensions: ['exchange_definition_check'],

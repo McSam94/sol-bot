@@ -15,6 +15,7 @@ Blockly.Blocks.balance = {
 					options: JupStore.getState().getTokensDropdown() ?? [['', '']],
 				},
 			],
+			colour: 230,
 			output: null,
 		};
 	},

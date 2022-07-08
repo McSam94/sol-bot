@@ -32,6 +32,7 @@ Blockly.Blocks.exchange_condition = {
 					name: 'EXCHANGE_CONDITION',
 				},
 			],
+			colour: '#020029',
 		};
 	},
 };

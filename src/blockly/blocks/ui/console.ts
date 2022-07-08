@@ -13,6 +13,7 @@ Blockly.Blocks.console = {
 					name: 'TEXT',
 				},
 			],
+			colour: 215,
 			previousStatement: null,
 			nextStatement: null,
 		};

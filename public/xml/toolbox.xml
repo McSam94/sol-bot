@@ -1,5 +1,5 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
-	<category name="Exchange Definition" colour="360">
+	<category name="Exchange Definition" colour="#020029">
 		<block type="exchange_definition">
 			<statement name="EXCHANGE_PARAMETER">
 				<block type="exchange_parameter">
@@ -27,23 +27,39 @@
 			</value>
 		</block>
 	</category>
-	<category name="Exchange Condition" colour="300">
+	<category name="Exchange Condition" colour="#020029">
 		<block type="exchange_condition"></block>
 		<block type="exchange_swap"></block>
 	</category>
-	<category name="Exchange Again" colour="240">
+	<category name="Exchange Again" colour="#020029">
 		<block type="loop_condition"></block>
 		<block type="exchange_again"></block>
 	</category>
 	<sep></sep>
-	<category name="Token" colour="230">
+	<category name="Token" colour="240">
 		<block type="balance"></block>
 		<block type="token_price"></block>
 	</category>
-	<category name="Route" colour="220">
+	<category name="Route" colour="230">
 		<block type="route_property"></block>
 	</category>
 	<sep></sep>
+	<category name="UI" colour="220">
+		<block type="console">
+			<value name="TEXT">
+				<shadow type="text">
+					<field name="TEXT">Your text here</field>
+				</shadow>
+			</value>
+		</block>
+		<block type="toast">
+			<value name="TEXT">
+				<shadow type="text">
+					<field name="TEXT">Your text here</field>
+				</shadow>
+			</value>
+		</block>
+	</category>
 	<category name="Logic" colour="210">
 		<block type="controls_if"></block>
 		<block type="logic_compare"></block>
@@ -242,22 +258,6 @@
 			<value name="TEXT">
 				<shadow type="text">
 					<field name="TEXT">abc</field>
-				</shadow>
-			</value>
-		</block>
-	</category>
-	<category name="UI" colour="240">
-		<block type="console">
-			<value name="TEXT">
-				<shadow type="text">
-					<field name="TEXT">Your text here</field>
-				</shadow>
-			</value>
-		</block>
-		<block type="toast">
-			<value name="TEXT">
-				<shadow type="text">
-					<field name="TEXT">Your text here</field>
 				</shadow>
 			</value>
 		</block>

@@ -14,6 +14,7 @@ Blockly.Blocks.exchange_slippage = {
 					check: 'Number',
 				},
 			],
+			colour: '#4E6882',
 			previousStatement: null,
 			extensions: ['exchange_definition_check'],
 		};

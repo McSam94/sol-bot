@@ -20,6 +20,7 @@ Blockly.Blocks.token_price = {
 					options: TokenStore.getState().getCurrencyDropdown() ?? [['', '']],
 				},
 			],
+			colour: 230,
 			output: null,
 		};
 	},

@@ -16,6 +16,7 @@ Blockly.Blocks.route_property = {
 					options: JupStore.getState().getRoutePropDropdown() ?? [['', '']],
 				},
 			],
+			colour: 220,
 			output: null,
 		};
 	},
