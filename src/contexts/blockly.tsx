@@ -2,7 +2,7 @@ import * as React from 'react';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Blockly, { WorkspaceSvg } from 'blockly';
-import { useInterval } from 'react-use';
+import { useBeforeUnload, useInterval } from 'react-use';
 import { Interpreter } from 'js-interpreter-npm';
 import { interpreterConfig } from '@utils/interpreter';
 import { fetchXml, saveAs, generateCode } from '@utils/blockly';
@@ -43,7 +43,7 @@ const BLOCKLY_WORKSPACE_CONFIG = {
 const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 	const { wallet, publicKey } = useWallet();
 	const { init: jupInit, setWallet: setJupWallet, jupiter } = useJupStore();
-	const { setState } = useBotStore();
+	const { setState, botStatus } = useBotStore();
 	const { init: walletInit, setWallet } = useWalletStore();
 
 	const [workspace, setWorkspace] = React.useState<WorkspaceSvg>();
@@ -148,6 +148,8 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 		WalletStore.getState().getUserBalances(publicKey);
 	}, 10000);
+
+	useBeforeUnload(() => botStatus !== 'idle', 'Your bot is running, are you sure you wanna quit?');
 
 	// set wallet to store
 	React.useEffect(() => {
