@@ -102,7 +102,7 @@ const RunPanel: React.FC = () => {
 						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
 							{errors?.reverse()?.map(({ dateTime, error }) => (
 								<div key={dateTime} className='text-sm flex flex-col'>
-									<span className='text-xs text-black/50'>{`${new Date().toLocaleTimeString()}`}</span>
+									<span className='text-xs text-black/50'>{dateTime}</span>
 									<span
 										className='break-all text-ellipsis overflow-hidden ...'
 										data-tip={error.toString()}
