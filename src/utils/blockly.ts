@@ -42,8 +42,9 @@ export const generateCode = (code: string) => {
 					shouldLoop = JupLoop();
 				}
 			} catch (error) {
-				error(error)
-				shouldLoop = false
+				console.error(error);
+				error(error);
+				shouldLoop = false;
 			}
 		}
 
