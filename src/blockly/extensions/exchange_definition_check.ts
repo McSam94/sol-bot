@@ -6,8 +6,8 @@ Blockly.Extensions.unregister('exchange_definition_check');
 Blockly.Extensions.register('exchange_definition_check', function (this: BlockSvg) {
 	const _this = this;
 	this.setOnChange(function (event: Blockly.Events.Abstract) {
-		if (event.type !== Blockly.Events.MOVE) return;
+		if (event instanceof Blockly.Events.BlockMove) return;
 
-		validateBlockInParent(_this, 'exchange_definition');
+		validateBlockInParent(_this, 'exchange_definition', `This block need to place under 'Exchange Definition'`);
 	});
 });

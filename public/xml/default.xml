@@ -1,17 +1,17 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
   <variables>
-    <variable id="#xQprlR`E[Wk,=ShAm2C">stake</variable>
+    <variable id="m55VdkYnwBq7w7%GfBjG">initial balance</variable>
   </variables>
-  <block type="exchange_definition" id="wTRfXZiTo|RY5EmuhLRT" x="114" y="93">
+  <block type="exchange_definition" id="wTRfXZiTo|RY5EmuhLRT" x="114" y="55">
     <statement name="EXCHANGE_PARAMETER">
       <block type="exchange_parameter" id="8|qpuhBqnalLGXb$/n*$" deletable="false" movable="false">
         <field name="PAY_TOKEN_LIST">EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v</field>
-        <field name="RECEIVE_TOKEN_LIST">So11111111111111111111111111111111111111112</field>
+        <field name="RECEIVE_TOKEN_LIST">EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v</field>
         <next>
           <block type="exchange_slippage" id="GesNq~PQrp07t6o1y(Rr">
             <value name="SLIPPAGE">
               <shadow type="math_number" id="P4t85b+tI.9$GjV~r*zG">
-                <field name="NUM">1</field>
+                <field name="NUM">0.1</field>
               </shadow>
             </value>
           </block>
@@ -19,31 +19,52 @@
       </block>
     </statement>
     <statement name="INITIALIZATION">
-      <block type="variables_set" id="a)2(C6TR-]WSgfT.}Wv+">
-        <field name="VAR" id="#xQprlR`E[Wk,=ShAm2C">stake</field>
+      <block type="variables_set" id="tHscVNn!B_YIxf}_rO5V">
+        <field name="VAR" id="m55VdkYnwBq7w7%GfBjG">initial balance</field>
         <value name="VALUE">
-          <block type="math_number" id="f{Tv(1zPP+AB8hq5CTA(">
-            <field name="NUM">0.1</field>
+          <block type="balance" id="4q:+?2t~?(BbS6lj%,]B">
+            <field name="TOKEN_BALANCE">EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v</field>
           </block>
         </value>
+        <next>
+          <block type="console" id="Xi49;-;}X|6RD[WpdgI$">
+            <value name="TEXT">
+              <shadow type="text" id="0J7T(BL1DN*Ko~|~z;ns">
+                <field name="TEXT">Initial Balance...</field>
+              </shadow>
+            </value>
+            <next>
+              <block type="console" id="LoLy(tM01xe)J?)k}`k_">
+                <value name="TEXT">
+                  <shadow type="text" id="yepBuof@NG=u|6qtljj]">
+                    <field name="TEXT">dummy</field>
+                  </shadow>
+                  <block type="variables_get" id="_PVo_X8SZx`CbM)/1ev+">
+                    <field name="VAR" id="m55VdkYnwBq7w7%GfBjG">initial balance</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
       </block>
     </statement>
-    <statement name="EXCHANGE_OPTIONS">
-      <block type="exchange_amount" id="[HPY)~`LMum(s0$6h=rQ">
+    <statement name="EXCHANGE_AMOUNT">
+      <block type="exchange_amount" id=")@pHWTVOFpgwx[Cx(q9a">
         <value name="EXCHANGE_AMOUNT">
-          <block type="variables_get" id=";c:,iO(E0IB@5D0$hXcu">
-            <field name="VAR" id="#xQprlR`E[Wk,=ShAm2C">stake</field>
-          </block>
+          <shadow type="math_number" id="!~{k*+3C,n3`.U$!`=O;">
+            <field name="NUM">1</field>
+          </shadow>
         </value>
       </block>
     </statement>
   </block>
-  <block type="exchange_condition" id="cztYI:@F-MO)}W[)tN0k" x="114" y="378">
+  <block type="exchange_condition" id="cztYI:@F-MO)}W[)tN0k" x="117" y="378">
     <statement name="EXCHANGE_CONDITION">
       <block type="controls_if" id="DkRO*(Fi!qHQoc!f0n[Z">
         <value name="IF0">
           <block type="logic_compare" id="2jnXQ8Z2S!}u8q!.GUuj">
-            <field name="OP">LT</field>
+            <field name="OP">GT</field>
             <value name="A">
               <block type="route_property" id="ES3Q!Q0Irfw?SytjTU~6">
                 <field name="ROUTE_PROPERTY">outAmount</field>
@@ -51,7 +72,7 @@
             </value>
             <value name="B">
               <block type="math_number" id="DsfRLC}Wcn]w-!!P=~Dk">
-                <field name="NUM">1</field>
+                <field name="NUM">1.0025</field>
               </block>
             </value>
           </block>
@@ -62,21 +83,48 @@
       </block>
     </statement>
   </block>
-  <block type="loop_condition" id=";NRPq,**wn4_%aV3p!/z" x="114" y="544">
+  <block type="loop_condition" id=";NRPq,**wn4_%aV3p!/z" x="121" y="537">
     <statement name="LOOP_CONDITION">
-      <block type="math_change" id="HRNUr=J|WC*nl)s-og;x">
-        <field name="VAR" id="#xQprlR`E[Wk,=ShAm2C">stake</field>
-        <value name="DELTA">
-          <shadow type="math_number" id=",4wvL35R#,x=3%Vb7nAO">
-            <field name="NUM">1</field>
-          </shadow>
-          <block type="math_number" id="22@_2e~#*{)d*-8#NDk_">
-            <field name="NUM">0.1</field>
+      <block type="controls_if" id="!(Be~|rps2KPdiPB,*aR">
+        <value name="IF0">
+          <block type="logic_compare" id="%{x:{r|9o7jIn/NF)=fB">
+            <field name="OP">GTE</field>
+            <value name="A">
+              <block type="variables_get" id="`+n^hLCfgVm|W$ED!zUK">
+                <field name="VAR" id="m55VdkYnwBq7w7%GfBjG">initial balance</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="balance" id="XqY[Ir%ZP*^st,vn%(39">
+                <field name="TOKEN_BALANCE">EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v</field>
+              </block>
+            </value>
           </block>
         </value>
-        <next>
-          <block type="exchange_again" id="`[@fQ_^~9wxb#=Ybrpmn"></block>
-        </next>
+        <statement name="DO0">
+          <block type="console" id="mU$tI-jDHgFYya2=$9df">
+            <value name="TEXT">
+              <shadow type="text" id="waPLG|$hf6qlm1GB/4Z3">
+                <field name="TEXT">End of loop...</field>
+              </shadow>
+            </value>
+            <next>
+              <block type="console" id="Clq++7[F?MQ/-=-6aC9a">
+                <value name="TEXT">
+                  <shadow type="text" id="=Mm`H^-x1`K2%1{Cf/lh">
+                    <field name="TEXT">dummy</field>
+                  </shadow>
+                  <block type="balance" id="w/$vu{YAKd*6+hRC}OW7">
+                    <field name="TOKEN_BALANCE">EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="exchange_again" id="`[@fQ_^~9wxb#=Ybrpmn"></block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
       </block>
     </statement>
   </block>

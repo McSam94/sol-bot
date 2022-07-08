@@ -73,9 +73,10 @@ Blockly.Blocks.exchange_definition = {
 			args5: [
 				{
 					type: 'input_statement',
-					name: 'EXCHANGE_OPTIONS',
+					name: 'EXCHANGE_AMOUNT',
 				},
 			],
+			extensions: ['exchange_amount_check'],
 		};
 	},
 };

@@ -6,6 +6,7 @@ import { useBeforeUnload, useInterval } from 'react-use';
 import { Interpreter } from 'js-interpreter-npm';
 import { interpreterConfig } from '@utils/interpreter';
 import { fetchXml, saveAs, generateCode } from '@utils/blockly';
+import { devLog } from '@utils/dev';
 import WalletStore, { useWalletStore } from '@stores/wallet';
 import { useJupStore } from '@stores/jupiter';
 import { useBotStore } from '@stores/bot';
@@ -14,7 +15,6 @@ import '@blockly/blocks';
 import '@blockly/fields';
 import '@blockly/extensions';
 import '@blockly/styles';
-import { devLog } from '@utils/dev';
 
 interface BlocklyContextProps {
 	workspace: Blockly.WorkspaceSvg | undefined;
@@ -37,13 +37,14 @@ const BlocklyContext = React.createContext<BlocklyContextProps>({
 const BLOCKLY_WORKSPACE_CONFIG = {
 	grid: { spacing: 40, length: 11, colour: '#f3f3f3' },
 	trashcan: true,
+	zoom: { pinch: true, wheel: true },
 	scrollbars: true,
 };
 
 const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 	const { wallet, publicKey } = useWallet();
 	const { init: jupInit, setWallet: setJupWallet, jupiter } = useJupStore();
-	const { setState, botStatus } = useBotStore();
+	const { setState, botStatus, removeInvalidBlock, invalidBlocks } = useBotStore();
 	const { init: walletInit, setWallet } = useWalletStore();
 
 	const [workspace, setWorkspace] = React.useState<WorkspaceSvg>();
@@ -52,10 +53,15 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 	const isWorkspaceReady = React.useMemo(() => !!workspace, [workspace]);
 
+	const initializeStore = React.useCallback(async () => {
+		await jupInit();
+		await walletInit();
+	}, [jupInit, walletInit]);
+
 	const renderWorkspace = React.useCallback(
 		async (opts = BLOCKLY_WORKSPACE_CONFIG) => {
-			await jupInit();
-			await walletInit();
+			await initializeStore();
+
 			const toolboxXml = await fetchXml('/xml/toolbox.xml');
 			const defaultXml = (await fetchXml('/xml/default.xml')) as string;
 			setWorkspace(prevState => {
@@ -71,7 +77,7 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 				return injectedWorkspace;
 			});
 		},
-		[jupInit, walletInit]
+		[initializeStore]
 	);
 
 	const runInterpreter = React.useCallback((interpreter: typeof Interpreter, oldResolver?: () => void) => {
@@ -159,6 +165,16 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 		setWallet(wallet.adapter as SignerWalletAdapter);
 	}, [jupiter, wallet?.adapter, setJupWallet, setWallet]);
 
+	React.useEffect(() => {
+		workspace?.addChangeListener((event: Blockly.Events.BlockBase) => {
+			// Check if invalidate block is removed
+			if (event instanceof Blockly.Events.BlockDelete) {
+				event.ids?.forEach(id => removeInvalidBlock(id));
+			}
+		});
+	}, [workspace, removeInvalidBlock]);
+
+	// first render workspace
 	React.useEffect(() => {
 		renderWorkspace();
 	}, [renderWorkspace]);
