@@ -45,7 +45,7 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 	const { wallet, publicKey } = useWallet();
 	const { init: jupInit, setWallet: setJupWallet, jupiter } = useJupStore();
 	const { setState, botStatus, removeInvalidBlock } = useBotStore();
-	const { init: tokenInit, setWallet, getTokenPrice } = useTokenStore();
+	const { init: tokenInit, setWallet } = useTokenStore();
 
 	const [workspace, setWorkspace] = React.useState<WorkspaceSvg>();
 
@@ -61,7 +61,6 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 	const renderWorkspace = React.useCallback(
 		async (opts = BLOCKLY_WORKSPACE_CONFIG) => {
 			await initializeStore();
-			console.log('🚀 ~ file: blockly.tsx ~ line 49 ~ getTokenPrice', await getTokenPrice('ethereum', 'myr'));
 
 			const toolboxXml = await fetchXml('/xml/toolbox.xml');
 			const defaultXml = (await fetchXml('/xml/default.xml')) as string;
@@ -78,7 +77,7 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 				return injectedWorkspace;
 			});
 		},
-		[initializeStore, getTokenPrice]
+		[initializeStore]
 	);
 
 	const runInterpreter = React.useCallback((interpreter: typeof Interpreter, oldResolver?: () => void) => {
