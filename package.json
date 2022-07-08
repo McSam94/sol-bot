@@ -23,6 +23,7 @@
 		"blockly": "^8.0.3",
 		"bs58": "^5.0.0",
 		"classnames": "^2.3.1",
+		"coingecko-api-v3": "^0.0.13",
 		"file-saver": "^2.0.5",
 		"js-interpreter-npm": "^1.0.7",
 		"lodash.debounce": "^4.0.8",

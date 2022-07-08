@@ -3,9 +3,15 @@ import { Connection, PublicKey, TokenAmount } from '@solana/web3.js';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import create from 'zustand/vanilla';
+import { CoinGeckoClient, CoinListResponseItem } from 'coingecko-api-v3';
 import { WRAPPED_SOL } from '@constants/coin';
 import { fromDecimal } from '@utils/number';
 import { convertStoreToHooks } from '@utils/store';
+
+const coinGeckoClient = new CoinGeckoClient({
+	timeout: 10000,
+	autoRetry: true,
+});
 
 interface TokenAccountInfo {
 	pubkey: PublicKey;
@@ -18,21 +24,33 @@ interface TokenAccountInfo {
 	};
 }
 
-interface WalletStoreInt {
+interface TokenStoreInt {
 	connection: Connection;
-	wallet: SignerWalletAdapter | null;
 	userBalances: Map<string, TokenAccountInfo>;
+	wallet: SignerWalletAdapter | null;
+	coins: Array<CoinListResponseItem> | null;
+	currencies: Array<string> | null;
 	init: () => void;
 	getUserBalances: (walletPubKey: PublicKey) => Promise<void>;
 	getBalance: (tokenMint: string) => string;
 	setWallet: (wallet: SignerWalletAdapter) => void;
+	getCoinDropdown: () => Array<Array<string>> | undefined;
+	getCurrencyDropdown: () => Array<Array<string>> | undefined;
+	getTokenPrice: (tokenMint: string, currency: string) => Promise<number>;
 }
 
-const WalletStore = create<WalletStoreInt>((set, get) => ({
+const TokenStore = create<TokenStoreInt>((set, get) => ({
 	connection: new Connection(RPC_ENDPOINT),
 	userBalances: new Map(),
 	wallet: null,
-	init: async () => {},
+	coins: null,
+	currencies: null,
+	init: async () => {
+		const coins = await coinGeckoClient.coinList({ include_platform: false });
+		const currencies = await coinGeckoClient.simpleSupportedCurrencies();
+
+		set({ coins, currencies });
+	},
 	getUserBalances: async (walletPubKey: PublicKey) => {
 		const { connection } = get();
 
@@ -96,7 +114,18 @@ const WalletStore = create<WalletStoreInt>((set, get) => ({
 		getUserBalances(wallet.publicKey);
 		set({ wallet });
 	},
+	getCoinDropdown: () => {
+		return get().coins?.map(({ name, id }) => [name ?? '', id ?? '']) ?? [];
+	},
+	getCurrencyDropdown: () => {
+		return get().currencies?.map(currency => [currency.toUpperCase(), currency]);
+	},
+	getTokenPrice: async (tokenId: string, currency: string) => {
+		const price = await coinGeckoClient.simplePrice({ ids: tokenId, vs_currencies: currency });
+
+		return price[tokenId][currency];
+	},
 }));
 
-export default WalletStore;
-export const useWalletStore = convertStoreToHooks<WalletStoreInt>(WalletStore);
+export default TokenStore;
+export const useTokenStore = convertStoreToHooks<TokenStoreInt>(TokenStore);

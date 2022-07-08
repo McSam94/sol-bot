@@ -36,8 +36,9 @@
 		<block type="exchange_again"></block>
 	</category>
 	<sep></sep>
-	<category name="Wallet" colour="230">
+	<category name="Token" colour="230">
 		<block type="balance"></block>
+		<block type="token_price"></block>
 	</category>
 	<category name="Route" colour="220">
 		<block type="route_property"></block>

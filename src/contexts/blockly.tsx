@@ -7,7 +7,7 @@ import { Interpreter } from 'js-interpreter-npm';
 import { interpreterConfig } from '@utils/interpreter';
 import { fetchXml, saveAs, generateCode } from '@utils/blockly';
 import { devLog } from '@utils/dev';
-import WalletStore, { useWalletStore } from '@stores/wallet';
+import TokenStore, { useTokenStore } from '@stores/token';
 import { useJupStore } from '@stores/jupiter';
 import { useBotStore } from '@stores/bot';
 
@@ -44,8 +44,8 @@ const BLOCKLY_WORKSPACE_CONFIG = {
 const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 	const { wallet, publicKey } = useWallet();
 	const { init: jupInit, setWallet: setJupWallet, jupiter } = useJupStore();
-	const { setState, botStatus, removeInvalidBlock, invalidBlocks } = useBotStore();
-	const { init: walletInit, setWallet } = useWalletStore();
+	const { setState, botStatus, removeInvalidBlock } = useBotStore();
+	const { init: tokenInit, setWallet, getTokenPrice } = useTokenStore();
 
 	const [workspace, setWorkspace] = React.useState<WorkspaceSvg>();
 
@@ -55,12 +55,13 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 	const initializeStore = React.useCallback(async () => {
 		await jupInit();
-		await walletInit();
-	}, [jupInit, walletInit]);
+		await tokenInit();
+	}, [jupInit, tokenInit]);
 
 	const renderWorkspace = React.useCallback(
 		async (opts = BLOCKLY_WORKSPACE_CONFIG) => {
 			await initializeStore();
+			console.log('🚀 ~ file: blockly.tsx ~ line 49 ~ getTokenPrice', await getTokenPrice('ethereum', 'myr'));
 
 			const toolboxXml = await fetchXml('/xml/toolbox.xml');
 			const defaultXml = (await fetchXml('/xml/default.xml')) as string;
@@ -77,7 +78,7 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 				return injectedWorkspace;
 			});
 		},
-		[initializeStore]
+		[initializeStore, getTokenPrice]
 	);
 
 	const runInterpreter = React.useCallback((interpreter: typeof Interpreter, oldResolver?: () => void) => {
@@ -152,7 +153,7 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 	useInterval(() => {
 		if (!publicKey) return;
 
-		WalletStore.getState().getUserBalances(publicKey);
+		TokenStore.getState().getUserBalances(publicKey);
 	}, 10000);
 
 	useBeforeUnload(() => botStatus !== 'idle', 'Your bot is running, are you sure you wanna quit?');

@@ -24,6 +24,7 @@ specifiers:
   blockly: ^8.0.3
   bs58: ^5.0.0
   classnames: ^2.3.1
+  coingecko-api-v3: ^0.0.13
   eslint: 8.19.0
   eslint-config-next: 12.2.0
   file-saver: ^2.0.5
@@ -59,6 +60,7 @@ dependencies:
   blockly: 8.0.3
   bs58: 5.0.0
   classnames: 2.3.1
+  coingecko-api-v3: 0.0.13
   file-saver: 2.0.5
   js-interpreter-npm: 1.0.7
   lodash.debounce: 4.0.8
@@ -2258,6 +2260,10 @@ packages:
   /clsx/1.2.0:
     resolution: {integrity: sha512-EPRP7XJsM1y0iCU3Z7C7jFKdQboXSeHgEfzQUTlz7m5NP3hDrlz48aUsmNGp4pC+JOW9WA3vIRqlYuo/bl4Drw==}
     engines: {node: '>=6'}
+    dev: false
+
+  /coingecko-api-v3/0.0.13:
+    resolution: {integrity: sha512-vL49LieL0TPhnvLEwEWuOdZqKNxHOjbAtCYu+gzkzdHoZAc3haALc2i1mVlZ8psBigULFsRF7wek9AqTBPZ2EQ==}
     dev: false
 
   /color-convert/2.0.1:

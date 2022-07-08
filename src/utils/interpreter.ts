@@ -2,7 +2,7 @@ import Interpreter from 'js-interpreter-npm';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { toast } from 'react-toastify';
 import { RouteProp } from '@constants/routes';
-import WalletStore from '@stores/wallet';
+import TokenStore from '@stores/token';
 import JupStore from '@stores/jupiter';
 import BotStore from '@stores/bot';
 import { fromDecimal } from '@utils/number';
@@ -106,7 +106,7 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		scope,
 		'getWallet',
 		jsInterpreter.createNativeFunction(function () {
-			const { wallet } = WalletStore.getState();
+			const { wallet } = TokenStore.getState();
 			return wallet;
 		})
 	);
@@ -116,8 +116,19 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		scope,
 		'getBalance',
 		jsInterpreter.createNativeFunction(function (tokenMint: string) {
-			const balance = WalletStore.getState().getBalance(tokenMint);
+			const balance = TokenStore.getState().getBalance(tokenMint);
 			return balance;
+		})
+	);
+
+	// Get Token Price
+	jsInterpreter.setProperty(
+		scope,
+		'getTokenPrice',
+		jsInterpreter.createAsyncFunction(function (tokenId: string, currency: string, callback: Function) {
+			TokenStore.getState()
+				.getTokenPrice(tokenId, currency)
+				.then(price => callback(price));
 		})
 	);
 }
