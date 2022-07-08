@@ -46,7 +46,8 @@ const WalletStore = create<WalletStoreInt>((set, get) => ({
 		);
 
 		const initialUserBalancesMap = new Map<string, TokenAccountInfo>();
-		initialUserBalancesMap.set(walletPubKey.toBase58(), {
+		const solBalance = fromDecimal(nativeBalance, 9);
+		initialUserBalancesMap.set(WRAPPED_SOL.address, {
 			pubkey: walletPubKey,
 			info: {
 				isNative: true,
@@ -54,10 +55,10 @@ const WalletStore = create<WalletStoreInt>((set, get) => ({
 				owner: walletPubKey.toBase58(),
 				state: 'initialized',
 				tokenAmount: {
-					amount: `${fromDecimal(nativeBalance, 9)}`,
+					amount: `${nativeBalance}`,
 					decimals: 9,
-					uiAmount: nativeBalance,
-					uiAmountString: `${nativeBalance}`,
+					uiAmount: solBalance,
+					uiAmountString: `${solBalance}`,
 				},
 			},
 		});
