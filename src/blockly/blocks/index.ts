@@ -4,4 +4,4 @@ import './exchange-condition';
 import './exchange-again';
 import './routes';
 import './tokens';
-import './text';
+import './ui';

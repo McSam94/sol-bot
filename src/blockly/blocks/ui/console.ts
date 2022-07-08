@@ -21,6 +21,6 @@ Blockly.Blocks.console = {
 
 Blockly.JavaScript.console = (block: BlockSvg) => {
 	const msg = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "''";
-	const code = `console.log(${msg});\n`;
-	return code;
+
+	return `console.log(${msg});\n`;
 };

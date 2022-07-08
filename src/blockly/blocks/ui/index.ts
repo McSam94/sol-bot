@@ -1,1 +1,2 @@
 import './console';
+import './toast';
