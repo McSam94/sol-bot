@@ -36,10 +36,10 @@ const RunPanel: React.FC = () => {
 		[connected, botStatus, isWorkspaceReady, invalidBlocks, missingMandatoryBlocks, extraBlocks]
 	);
 
-	const buttonLabel = React.useMemo(() => {
-		if (botStatus === 'running') return 'Stop';
+	const buttonIcon = React.useMemo(() => {
+		if (botStatus === 'running') return 'stop';
 
-		return 'Run';
+		return 'play';
 	}, [botStatus]);
 
 	const runTooltip = React.useMemo(() => {
@@ -52,7 +52,7 @@ const RunPanel: React.FC = () => {
 
 		if (extraBlocks.length > 0) return `${extraBlocks.map(startCase).join(', ')} block must be unique`;
 
-		return null;
+		return 'Run the bot';
 	}, [connected, invalidBlocks, missingMandatoryBlocks, extraBlocks]);
 
 	const onRunClick = React.useCallback(() => {
@@ -88,32 +88,46 @@ const RunPanel: React.FC = () => {
 	return (
 		<>
 			<div className='flex flex-col w-full h-full bg-gray-100'>
-				<div className='flex flex-col border-b h-60 items-center justify-center'>
-					<div
-						className='text-md font-semibold text-center mb-2'
-						data-tip='test'
-						data-for='tooltip_main'
-					>{`Status: ${botStatus}`}</div>
-					<Button disabled={shouldDisableRun} onClick={onRunClick}>
-						<span data-tip={runTooltip} data-for='tooltip_main' data-tip-disable={false}>
-							{buttonLabel}
-						</span>
-					</Button>
+				<div className='flex flex-col h-60 justify-center border-b'>
+					<div className='text-md font-bold text-center mb-2'>{`Status: ${startCase(botStatus)}`}</div>
+					<div className='flex flex-row space-x-4 items-center justify-center'>
+						<Button
+							disabled={shouldDisableRun}
+							onClick={onRunClick}
+							className='shadow-lg hover:shadow-none'
+						>
+							<span data-tip={runTooltip} data-for='tooltip_main' data-tip-disable={false}>
+								<Icon name={buttonIcon} color='white' />
+							</span>
+						</Button>
 
-					<Button disabled={!isWorkspaceReady} onClick={saveWorkspace}>
-						Save
-					</Button>
+						<Button
+							className='shadow-lg hover:shadow-none'
+							disabled={!isWorkspaceReady}
+							onClick={saveWorkspace}
+						>
+							<span data-tip='Save this workspace' data-for='tooltip_main'>
+								<Icon name='save' color='white' />
+							</span>
+						</Button>
 
-					<input
-						ref={uploadRef}
-						type='file'
-						accept='.xml'
-						className='w-40 hidden'
-						onChange={loadWorkspace}
-					></input>
-					<Button disabled={!isWorkspaceReady} onClick={() => uploadRef.current?.click?.()}>
-						Load
-					</Button>
+						<input
+							ref={uploadRef}
+							type='file'
+							accept='.xml'
+							className='w-40 hidden'
+							onChange={loadWorkspace}
+						></input>
+						<Button
+							className='shadow-lg hover:shadow-none'
+							disabled={!isWorkspaceReady}
+							onClick={() => uploadRef.current?.click?.()}
+						>
+							<span data-tip='Upload saved workspace' data-for='tooltip_main'>
+								<Icon name='upload' color='white' />
+							</span>
+						</Button>
+					</div>
 				</div>
 				<div className='flex flex-col px-4 py-2' style={{ height: 'calc(100% - 240px)' }}>
 					<div className='flex flex-col h-1/2 border-b'>

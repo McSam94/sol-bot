@@ -4,6 +4,10 @@ import dynamic from 'next/dynamic';
 const IconSrc: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
 	trash: dynamic(() => import('public/icons/trash.svg')),
 	clear: dynamic(() => import('public/icons/clear.svg')),
+	play: dynamic(() => import('public/icons/play.svg')),
+	stop: dynamic(() => import('public/icons/stop.svg')),
+	save: dynamic(() => import('public/icons/save.svg')),
+	upload: dynamic(() => import('public/icons/upload.svg')),
 };
 
 interface IconProps {

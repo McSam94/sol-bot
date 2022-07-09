@@ -17,7 +17,7 @@ const Button: React.FC<ButtonProps & React.HTMLProps<HTMLButtonElement>> = ({
 		<button
 			type={type}
 			className={classNames(
-				'border bg-black text-white px-10 py-2 rounded-lg',
+				'border bg-black text-white p-4 rounded-lg',
 				{
 					'cursor-not-allowed bg-black/50': disabled,
 				},
