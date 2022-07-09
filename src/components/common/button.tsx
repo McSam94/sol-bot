@@ -2,14 +2,20 @@ import * as React from 'react';
 import classNames from 'classnames';
 
 interface ButtonProps {
-	className?: string;
-	disabled?: boolean;
-	onClick?: Function;
+	type?: 'button' | 'reset' | 'submit' | undefined;
 }
 
-const Button: React.FC<React.PropsWithChildren<ButtonProps>> = ({ className, disabled = false, onClick, children }) => {
+const Button: React.FC<ButtonProps & React.HTMLProps<HTMLButtonElement>> = ({
+	className,
+	disabled = false,
+	onClick,
+	children,
+	type,
+	...props
+}) => {
 	return (
 		<button
+			type={type}
 			className={classNames(
 				'border bg-black text-white px-10 py-2 rounded-lg',
 				{
@@ -18,7 +24,8 @@ const Button: React.FC<React.PropsWithChildren<ButtonProps>> = ({ className, dis
 				className
 			)}
 			disabled={disabled}
-			onClick={() => onClick?.()}
+			onClick={onClick}
+			{...props}
 		>
 			{children}
 		</button>
