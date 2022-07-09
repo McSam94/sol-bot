@@ -82,7 +82,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 	routeMap: null,
 	computedRoutes: null,
 	computedRoutesLastFetch: null,
-	cacheSecond: 10,
+	cacheSecond: 0,
 	tokens: null,
 	txids: null,
 	errors: null,
