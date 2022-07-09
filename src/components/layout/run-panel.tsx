@@ -28,6 +28,14 @@ const RunPanel: React.FC = () => {
 		[connected, botStatus, isWorkspaceReady, invalidBlocks]
 	);
 
+	const buttonLabel = React.useMemo(() => {
+		if (botStatus === 'running') return 'Stop';
+
+		if (!connected) return 'No Wallet';
+
+		return 'Run';
+	}, [botStatus, connected]);
+
 	const onRunClick = React.useCallback(() => {
 		if (botStatus === 'stopping') return;
 		if (botStatus === 'running') {
@@ -60,7 +68,7 @@ const RunPanel: React.FC = () => {
 				<div className='flex flex-col border-b h-60 items-center justify-center'>
 					<div className='text-md font-semibold text-center mb-2'>{`Status: ${botStatus}`}</div>
 					<Button disabled={shouldDisableRun} onClick={onRunClick}>
-						{botStatus === 'running' ? 'Stop' : 'Run'}
+						{buttonLabel}
 					</Button>
 
 					<Button disabled={!isWorkspaceReady} onClick={saveWorkspace}>
