@@ -98,12 +98,12 @@ const RunPanel: React.FC = () => {
 					<div className='flex flex-col h-1/2 border-b'>
 						<div className='text-lg font-bold'>Transactions</div>
 						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
-							{txids?.reverse()?.map(({ dateTime, txid }) => (
+							{txids?.map(({ dateTime, txid }) => (
 								<div key={txid} className='text-sm flex flex-col'>
 									<span className='text-xs text-black/50'>{dateTime}</span>
 									<a
 										className='underline'
-										href={`https://explorer.solana.com/tx/${txid}`}
+										href={`https://solscan.io/tx/${txid}`}
 										target='_blank'
 										rel='noreferrer'
 									>
@@ -116,13 +116,23 @@ const RunPanel: React.FC = () => {
 					<div className='flex flex-col h-1/2'>
 						<div className='text-lg font-bold'>Errors</div>
 						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
-							{errors?.reverse()?.map(({ dateTime, error }) => (
+							{errors?.map(({ dateTime, message, txid }) => (
 								<div key={dateTime} className='text-sm flex flex-col'>
 									<span className='text-xs text-black/50'>{dateTime}</span>
 									<span
 										className='break-all text-ellipsis overflow-hidden ...'
-										data-tip={error.toString()}
-									>{`${error.toString()}`}</span>
+										data-tip={message}
+									>{`${message}`}</span>
+									{txid ? (
+										<a
+											className='underline'
+											href={`https://solscan.io/tx/${txid}`}
+											target='_blank'
+											rel='noreferrer'
+										>
+											Solscan
+										</a>
+									) : null}
 								</div>
 							)) ?? <div className='text-sm text-black/50'>No record found</div>}
 						</div>

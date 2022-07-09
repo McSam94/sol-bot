@@ -42,14 +42,17 @@ interface TransactionHistory {
 }
 
 interface TransactionError {
-	error: Web3TransactionError;
+	message: string;
+	txid: string | null;
 	dateTime: string;
 }
 
 interface JupStoreInt {
 	jupiter: Jupiter | null;
 	routeMap: Map<string, string[]> | null;
-	bestRoute: RouteInfo | null;
+	computedRoutes: Array<RouteInfo> | null;
+	computedRoutesLastFetch: Date | null;
+	cacheSecond: number;
 	tokens: Array<Token> | null;
 	blocklyState: BlocklyState;
 	txids: Array<TransactionHistory> | null;
@@ -77,7 +80,9 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 	jupiter: null,
 	wallet: null,
 	routeMap: null,
-	bestRoute: null,
+	computedRoutes: null,
+	computedRoutesLastFetch: null,
+	cacheSecond: 10,
 	tokens: null,
 	txids: null,
 	errors: null,
@@ -116,7 +121,14 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 			.map(([key, value]) => ({ label: startCase(key), value }))
 			.filter(Boolean),
 	getComputedRoutes: async () => {
-		const { blocklyState, tokens, jupiter } = get();
+		const { blocklyState, tokens, jupiter, computedRoutesLastFetch, cacheSecond, computedRoutes } = get();
+
+		const now = new Date().getTime();
+		const previouslyFetchTimestamp = computedRoutesLastFetch?.getTime() ?? new Date().getTime();
+		if (computedRoutesLastFetch && (now - previouslyFetchTimestamp) / 1000 < cacheSecond) {
+			return computedRoutes;
+		}
+
 		const { inputMint, outputMint, amount, slippage } = blocklyState;
 		const inputToken = tokens?.find(token => token.address === inputMint);
 
@@ -124,7 +136,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		const slippageNum = +(slippage ?? 0);
 		if (!inputToken || !inputMint || !outputMint || !amountNum || !slippageNum) return null;
 
-		const computedRoutes: Array<RouteInfo> | null =
+		const newComputedRoutes: Array<RouteInfo> | null =
 			(
 				await jupiter?.computeRoutes({
 					inputMint: new PublicKey(inputMint),
@@ -135,7 +147,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 			)?.routesInfos ?? null;
 
 		// JsInterpreter can't convert RouteInfo properly so passed through zustand
-		set({ bestRoute: computedRoutes?.[0] ?? null });
+		set({ computedRoutes: newComputedRoutes ?? null, computedRoutesLastFetch: new Date() });
 		return computedRoutes;
 	},
 	setWallet: (wallet: SignerWalletAdapter) => {
@@ -145,14 +157,14 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		set({ jupiter });
 	},
 	exchange: async (wallet: SignerWalletAdapter) => {
-		const { jupiter, bestRoute } = get();
+		const { jupiter, computedRoutes } = get();
 
 		if (!jupiter) throw new Error('Jupiter not initialized');
-		if (!bestRoute) throw new Error('Best route not found');
+		if (!computedRoutes) throw new Error('Best route not found');
 		if (!wallet) throw new Error('Wallet not found');
 
 		const { execute } = await jupiter?.exchange({
-			routeInfo: bestRoute,
+			routeInfo: computedRoutes[0],
 		});
 
 		const swapResult: SwapResult = await execute({
@@ -164,7 +176,11 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		if ('error' in swapResult) {
 			const { error } = swapResult;
 			if (!error) return;
-			set(prevState => ({ ...prevState, errors: [{ dateTime, error }, ...(prevState.errors ?? [])] }));
+			set(prevState => ({
+				...prevState,
+				errors: [{ dateTime, message: error.message, txid: error.txid ?? null }, ...(prevState.errors ?? [])],
+			}));
+			throw new Error(error?.message ?? 'Unknown error');
 		}
 
 		if ('txid' in swapResult) {

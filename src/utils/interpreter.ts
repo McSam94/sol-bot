@@ -1,6 +1,6 @@
 import Interpreter from 'js-interpreter-npm';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
-import { toast } from 'react-toastify';
+import { toast, ToastOptions } from 'react-toastify';
 import { RouteProp } from '@constants/routes';
 import TokenStore from '@stores/token';
 import JupStore from '@stores/jupiter';
@@ -19,9 +19,7 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		scope,
 		'toast',
 		jsInterpreter.createNativeFunction((content: string, type: 'info' | 'warn' | 'error') => {
-			toast[type](content, {
-				toastId: 'interpreter',
-			});
+			toast[type](content);
 		})
 	);
 
@@ -37,17 +35,31 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		)
 	);
 
+	// Update routes cache time
+	jsInterpreter.setProperty(
+		scope,
+		'updateRoutesCache',
+		jsInterpreter.createNativeFunction((value: number) => JupStore.setState({ cacheSecond: value }))
+	);
+
 	// Compute Routes
 	jsInterpreter.setProperty(
 		scope,
 		'computeRoutes',
 		jsInterpreter.createAsyncFunction(function (callback: Function) {
-			JupStore.getState()
-				.getComputedRoutes()
-				.then(routesInfos => {
-					callback(jsInterpreter.nativeToPseudo(routesInfos?.splice(0, 10)));
-				})
-				.catch(() => callback([]));
+			const { getComputedRoutes } = JupStore.getState();
+
+			toast.promise(
+				() =>
+					getComputedRoutes()
+						.then(routesInfos => {
+							callback(jsInterpreter.nativeToPseudo(routesInfos?.splice(0, 10)));
+						})
+						.catch(() => callback([])),
+				{
+					pending: 'Finding the best routes',
+				}
+			);
 		})
 	);
 
@@ -56,10 +68,11 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		scope,
 		'getBestRouteProp',
 		jsInterpreter.createNativeFunction(function (routeProp: RouteProp) {
-			const { tokens, blocklyState, bestRoute } = JupStore.getState();
+			const { tokens, blocklyState, computedRoutes } = JupStore.getState();
 
-			if (!bestRoute) return;
+			if (!computedRoutes) return;
 
+			const bestRoute = computedRoutes[0];
 			const { inAmount, outAmount } = bestRoute;
 
 			const bestRouteReceiveToken = tokens?.find(token => token.address === blocklyState.outputMint);
@@ -83,10 +96,13 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		scope,
 		'executeSwap',
 		jsInterpreter.createAsyncFunction(function (wallet: SignerWalletAdapter, callback: Function) {
-			JupStore.getState()
-				.exchange(wallet)
-				.then(() => callback())
-				.catch(() => callback());
+			const { exchange } = JupStore.getState();
+
+			toast.promise(() => exchange(wallet).finally(() => callback()), {
+				pending: 'Exchanging in progress...',
+				success: 'Swapped successfully',
+				error: 'Swapped failed',
+			});
 		})
 	);
 

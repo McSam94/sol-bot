@@ -14,6 +14,7 @@ Blockly.Blocks.console = {
 				},
 			],
 			colour: 215,
+			tooltip: 'Open DevTool (F12) > Console to see the log',
 			previousStatement: null,
 			nextStatement: null,
 		};

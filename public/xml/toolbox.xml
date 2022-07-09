@@ -6,12 +6,16 @@
 					<field name="PAY_TOKEN_LIST"></field>
 					<field name="RECEIVE_TOKEN_LIST"></field>
 					<next>
-						<block type="exchange_slippage">
-							<value name="SLIPPAGE">
-								<shadow type="math_number">
-									<field name="NUM">1</field>
-								</shadow>
-							</value>
+						<block type="computed_routes_cache">
+							<next>
+								<block type="exchange_slippage">
+									<value name="SLIPPAGE">
+										<shadow type="math_number">
+											<field name="NUM">1</field>
+										</shadow>
+									</value>
+								</block>
+							</next>
 						</block>
 					</next>
 				</block>
