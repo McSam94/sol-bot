@@ -116,7 +116,7 @@ const TokenStore = create<TokenStoreInt>((set, get) => ({
 		set({ wallet });
 	},
 	getCoinDropdown: () => {
-		return get().coins?.map(({ symbol, id }) => ({ label: symbol ?? '', value: id ?? '' })) ?? [];
+		return get().coins?.map(({ symbol, id }) => ({ label: symbol?.toUpperCase() ?? '', value: id ?? '' })) ?? [];
 	},
 	getCurrencyDropdown: () => {
 		return get().currencies?.map(currency => ({ label: currency.toUpperCase(), value: currency }));
