@@ -10,10 +10,11 @@ import { WALLET_CANT_SKIP_APPROVAL } from '@constants/wallet';
 import { Modal } from '@components/common';
 import Button from '@components/common/button';
 import ReactTooltip from 'react-tooltip';
+import Icon from '@components/common/Icon';
 
 const RunPanel: React.FC = () => {
 	const { connected, wallet } = useWallet();
-	const { txids, errors } = useJupStore();
+	const { txids, errors, clearErrors, clearTransaction } = useJupStore();
 	const { botStatus, invalidBlocks, missingMandatoryBlocks, extraBlocks } = useBotStore();
 	const { isWorkspaceReady, runBot, stopBot, saveWorkspace, loadWorkspace } = useBlockly();
 
@@ -116,35 +117,22 @@ const RunPanel: React.FC = () => {
 				</div>
 				<div className='flex flex-col px-4 py-2' style={{ height: 'calc(100% - 240px)' }}>
 					<div className='flex flex-col h-1/2 border-b'>
-						<div className='text-lg font-bold'>Transactions</div>
-						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
-							{txids?.map(({ dateTime, txid }) => (
-								<div key={txid} className='text-sm flex flex-col'>
-									<span className='text-xs text-black/50'>{dateTime}</span>
-									<a
-										className='underline'
-										href={`https://solscan.io/tx/${txid}`}
-										target='_blank'
-										rel='noreferrer'
-									>
-										Solscan
-									</a>
-								</div>
-							)) ?? <div className='text-sm text-black/50'>No record found</div>}
+						<div className='flex flex-row items-center w-full justify-between'>
+							<div className='text-lg font-bold'>Transactions</div>
+							<Icon
+								name='clear'
+								data-tip='Clear log'
+								data-for='tooltip_main'
+								className='cursor-pointer'
+								colorFn={({ hover }) => (hover ? 'black' : 'gray')}
+								onClick={clearTransaction}
+							/>
 						</div>
-					</div>
-					<div className='flex flex-col h-1/2'>
-						<div className='text-lg font-bold'>Errors</div>
 						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
-							{errors?.map(({ dateTime, message, txid }) => (
-								<div key={dateTime} className='text-sm flex flex-col'>
-									<span className='text-xs text-black/50'>{dateTime}</span>
-									<span
-										className='break-all text-ellipsis overflow-hidden ...'
-										data-tip={message}
-										data-for='tooltip_main'
-									>{`${message}`}</span>
-									{txid ? (
+							{txids?.length ?? 0 > 0 ? (
+								txids?.map(({ dateTime, txid }) => (
+									<div key={txid} className='text-sm flex flex-col'>
+										<span className='text-xs text-black/50'>{dateTime}</span>
 										<a
 											className='underline'
 											href={`https://solscan.io/tx/${txid}`}
@@ -153,9 +141,50 @@ const RunPanel: React.FC = () => {
 										>
 											Solscan
 										</a>
-									) : null}
-								</div>
-							)) ?? <div className='text-sm text-black/50'>No record found</div>}
+									</div>
+								))
+							) : (
+								<div className='text-sm text-black/50'>No record found</div>
+							)}
+						</div>
+					</div>
+					<div className='flex flex-col h-1/2'>
+						<div className='flex flex-row items-center justify-between w-full'>
+							<div className='text-lg font-bold'>Errors</div>
+							<Icon
+								name='clear'
+								data-tip='Clear log'
+								data-for='tooltip_main'
+								className='cursor-pointer'
+								colorFn={({ hover }) => (hover ? 'black' : 'gray')}
+								onClick={clearErrors}
+							/>
+						</div>
+						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
+							{errors?.length ?? 0 > 0 ? (
+								errors?.map(({ dateTime, message, txid }) => (
+									<div key={dateTime} className='text-sm flex flex-col'>
+										<span className='text-xs text-black/50'>{dateTime}</span>
+										<span
+											className='break-all text-ellipsis overflow-hidden ...'
+											data-tip={message}
+											data-for='tooltip_main'
+										>{`${message}`}</span>
+										{txid ? (
+											<a
+												className='underline'
+												href={`https://solscan.io/tx/${txid}`}
+												target='_blank'
+												rel='noreferrer'
+											>
+												Solscan
+											</a>
+										) : null}
+									</div>
+								))
+							) : (
+								<div className='text-sm text-black/50'>No record found</div>
+							)}
 						</div>
 					</div>
 				</div>

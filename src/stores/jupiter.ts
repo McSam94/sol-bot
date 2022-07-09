@@ -64,6 +64,8 @@ interface JupStoreInt {
 	getComputedRoutes: () => Promise<Array<RouteInfo> | null>;
 	setWallet: (wallet: SignerWalletAdapter) => void;
 	exchange: (wallet: SignerWalletAdapter) => Promise<void>;
+	clearTransaction: () => void;
+	clearErrors: () => void;
 }
 
 const initialBlocklyState = {
@@ -190,6 +192,8 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 			}));
 		}
 	},
+	clearTransaction: () => set({ txids: [] }),
+	clearErrors: () => set({ errors: [] }),
 }));
 
 export default JupStore;

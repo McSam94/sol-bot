@@ -1,9 +1,15 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	reactStrictMode: false,
 	webpack5: true,
 	webpack: config => {
 		config.resolve.fallback = { fs: false };
+		config.module.rules.push({
+			test: /\.svg$/,
+			use: ['@svgr/webpack'],
+		});
 
 		return config;
 	},
