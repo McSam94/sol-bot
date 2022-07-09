@@ -15,6 +15,7 @@ import '@blockly/blocks';
 import '@blockly/fields';
 import '@blockly/extensions';
 import '@blockly/styles';
+import { MANDATORY_BLOCKS, UNIQUE_BLOCKS } from '@constants/blockly';
 
 interface BlocklyContextProps {
 	workspace: Blockly.WorkspaceSvg | undefined;
@@ -44,7 +45,15 @@ const BLOCKLY_WORKSPACE_CONFIG = {
 const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 	const { wallet, publicKey } = useWallet();
 	const { init: jupInit, setWallet: setJupWallet, jupiter } = useJupStore();
-	const { setState, botStatus, removeInvalidBlock } = useBotStore();
+	const {
+		setState,
+		botStatus,
+		removeInvalidBlock,
+		addMissingBlock,
+		removeMissingBlock,
+		addExtraBlock,
+		removeExtraBlock,
+	} = useBotStore();
 	const { init: tokenInit, setWallet } = useTokenStore();
 
 	const [workspace, setWorkspace] = React.useState<WorkspaceSvg>();
@@ -171,8 +180,32 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 			if (event instanceof Blockly.Events.BlockDelete) {
 				event.ids?.forEach(id => removeInvalidBlock(id));
 			}
+
+			// Check if mandatory block is in workspace
+			if (event instanceof Blockly.Events.BlockCreate || event instanceof Blockly.Events.BlockDelete) {
+				const blocks = workspace.getAllBlocks(true);
+
+				// Check if mandatory block is in the workspace
+				MANDATORY_BLOCKS.forEach(blockType => {
+					if (blocks.some(block => block.type === blockType)) {
+						removeMissingBlock(blockType);
+					} else {
+						addMissingBlock(blockType);
+					}
+				});
+
+				// Check if there's duplicate blocks
+				UNIQUE_BLOCKS.forEach(blockType => {
+					const extraBlockCount = blocks.filter(block => block.type === blockType).length;
+					if (extraBlockCount > 1) {
+						addExtraBlock(blockType);
+					} else {
+						removeExtraBlock(blockType);
+					}
+				});
+			}
 		});
-	}, [workspace, removeInvalidBlock]);
+	}, [workspace, removeInvalidBlock, addMissingBlock, removeMissingBlock, addExtraBlock, removeExtraBlock]);
 
 	// first render workspace
 	React.useEffect(() => {

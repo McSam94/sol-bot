@@ -28,7 +28,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 				closeOnClick
 				draggable
 			/>
-			<ReactTooltip />
+			<ReactTooltip id='tooltip_main' />
 		</ContextProvider>
 	);
 }

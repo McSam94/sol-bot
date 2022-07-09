@@ -1,5 +1,7 @@
 import * as React from 'react';
+import dynamic from 'next/dynamic';
 import { toast } from 'react-toastify';
+import startCase from 'lodash.startcase';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useJupStore } from '@stores/jupiter';
 import { useBotStore } from '@stores/bot';
@@ -7,11 +9,12 @@ import { useBlockly } from '@contexts/blockly';
 import { WALLET_CANT_SKIP_APPROVAL } from '@constants/wallet';
 import { Modal } from '@components/common';
 import Button from '@components/common/button';
+import ReactTooltip from 'react-tooltip';
 
 const RunPanel: React.FC = () => {
 	const { connected, wallet } = useWallet();
 	const { txids, errors } = useJupStore();
-	const { botStatus, invalidBlocks } = useBotStore();
+	const { botStatus, invalidBlocks, missingMandatoryBlocks, extraBlocks } = useBotStore();
 	const { isWorkspaceReady, runBot, stopBot, saveWorkspace, loadWorkspace } = useBlockly();
 
 	const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
@@ -24,8 +27,12 @@ const RunPanel: React.FC = () => {
 	);
 
 	const shouldDisableRun = React.useMemo(
-		() => !connected || botStatus === 'stopping' || !isWorkspaceReady || invalidBlocks.length > 0,
-		[connected, botStatus, isWorkspaceReady, invalidBlocks]
+		() =>
+			!connected ||
+			botStatus === 'stopping' ||
+			!isWorkspaceReady ||
+			[invalidBlocks, missingMandatoryBlocks, extraBlocks].some(blocks => blocks.length > 0),
+		[connected, botStatus, isWorkspaceReady, invalidBlocks, missingMandatoryBlocks, extraBlocks]
 	);
 
 	const buttonLabel = React.useMemo(() => {
@@ -39,8 +46,13 @@ const RunPanel: React.FC = () => {
 
 		if (invalidBlocks.length > 0) return 'Workspace is not valid';
 
+		if (missingMandatoryBlocks.length > 0)
+			return `${missingMandatoryBlocks.map(startCase).join(', ')} block(s) is missing to execute the bot`;
+
+		if (extraBlocks.length > 0) return `${extraBlocks.map(startCase).join(', ')} block must be unique`;
+
 		return null;
-	}, [connected, invalidBlocks]);
+	}, [connected, invalidBlocks, missingMandatoryBlocks, extraBlocks]);
 
 	const onRunClick = React.useCallback(() => {
 		if (botStatus === 'stopping') return;
@@ -68,13 +80,21 @@ const RunPanel: React.FC = () => {
 		setIsModalOpen(false);
 	}, [runBot]);
 
+	React.useEffect(() => {
+		ReactTooltip.rebuild();
+	});
+
 	return (
 		<>
 			<div className='flex flex-col w-full h-full bg-gray-100'>
 				<div className='flex flex-col border-b h-60 items-center justify-center'>
-					<div className='text-md font-semibold text-center mb-2'>{`Status: ${botStatus}`}</div>
+					<div
+						className='text-md font-semibold text-center mb-2'
+						data-tip='test'
+						data-for='tooltip_main'
+					>{`Status: ${botStatus}`}</div>
 					<Button disabled={shouldDisableRun} onClick={onRunClick}>
-						<span data-tip={runTooltip} data-tip-disable={false}>
+						<span data-tip={runTooltip} data-for='tooltip_main' data-tip-disable={false}>
 							{buttonLabel}
 						</span>
 					</Button>
@@ -122,6 +142,7 @@ const RunPanel: React.FC = () => {
 									<span
 										className='break-all text-ellipsis overflow-hidden ...'
 										data-tip={message}
+										data-for='tooltip_main'
 									>{`${message}`}</span>
 									{txid ? (
 										<a

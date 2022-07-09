@@ -24,7 +24,7 @@ Blockly.Blocks.exchange_definition = {
 				},
 				{
 					type: 'field_label',
-					text: '1. Exchange parameters',
+					text: '1. Exchange definition',
 				},
 				{
 					type: 'dummy_field',
