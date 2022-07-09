@@ -71,7 +71,7 @@ class CustomDropdown extends Blockly.FieldDropdown {
 		}
 
 		const labelEl = document.createElement('div');
-		labelEl.textContent = startCase(label);
+		labelEl.textContent = label;
 		labelEl.classList.add('text-sm');
 		labelEl.classList.add('font-medium');
 		labelEl.classList.add('text-black/50');

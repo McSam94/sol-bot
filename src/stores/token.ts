@@ -117,7 +117,10 @@ const TokenStore = create<TokenStoreInt>((set, get) => ({
 	},
 	getCoinDropdown: () => {
 		return (
-			get().coins?.map(({ name, symbol, id }) => ({ label: `${name} (${symbol})` ?? '', value: id ?? '' })) ?? []
+			get().coins?.map(({ name, symbol, id }) => ({
+				label: `${name} (${symbol?.toUpperCase()})` ?? '',
+				value: id ?? '',
+			})) ?? []
 		);
 	},
 	getCurrencyDropdown: () => {
