@@ -20,13 +20,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 			<ToastContainer
 				position='bottom-left'
 				autoClose={5000}
+				rtl={false}
 				hideProgressBar={false}
 				newestOnTop={false}
-				rtl={false}
 				pauseOnFocusLoss={false}
+				pauseOnHover={false}
 				closeOnClick
 				draggable
-				pauseOnHover
 			/>
 			<ReactTooltip />
 		</ContextProvider>

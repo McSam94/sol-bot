@@ -3,9 +3,16 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import { useBlockly } from '@contexts/blockly';
 import WorkspaceSkeleton from '@components/skeleton/workspace';
+import { toast } from 'react-toastify';
 
 const Home: NextPage = () => {
 	const { workspace } = useBlockly();
+
+	React.useEffect(() => {
+		window.addEventListener('focus', () => {
+			toast.dismiss();
+		});
+	}, []);
 
 	return (
 		<>
