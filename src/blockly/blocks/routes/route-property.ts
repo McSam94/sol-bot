@@ -11,7 +11,7 @@ Blockly.Blocks.route_property = {
 			message0: 'Best route property: %1',
 			args0: [
 				{
-					type: 'field_dropdown',
+					type: 'custom_dropdown',
 					name: 'ROUTE_PROPERTY',
 					options: JupStore.getState().getRoutePropDropdown() ?? [['', '']],
 				},

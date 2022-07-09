@@ -10,7 +10,7 @@ Blockly.Blocks.balance = {
 			message0: 'Balance %1',
 			args0: [
 				{
-					type: 'field_dropdown',
+					type: 'custom_dropdown',
 					name: 'TOKEN_BALANCE',
 					options: JupStore.getState().getTokensDropdown() ?? [['', '']],
 				},

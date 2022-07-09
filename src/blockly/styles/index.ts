@@ -20,4 +20,8 @@ Blockly.Css.register(`
 .blocklyToolboxDiv:hover > .blocklyTreeRow {
     background: #9999A1;
 }
+
+.blocklyDropDownContent {
+    overflow: hidden;
+}
 `);

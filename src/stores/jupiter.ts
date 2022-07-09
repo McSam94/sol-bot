@@ -7,6 +7,7 @@ import startCase from 'lodash.startcase';
 import { NETWORK, RPC_ENDPOINT } from '@constants/connection';
 import { ROUTES_PROPS } from '@constants/routes';
 import { convertStoreToHooks } from '@utils/store';
+import { CustomDropdownOption } from '@blockly/fields/dropdown';
 
 interface Token {
 	chainId: number;
@@ -35,10 +36,6 @@ interface ImageDropdown {
 	alt: string;
 }
 
-type TokensDropdown = Array<Array<string | ImageDropdown>>;
-
-type routePropDropdown = Array<Array<string>>;
-
 interface TransactionHistory {
 	dateTime: string;
 	txid: string;
@@ -58,9 +55,9 @@ interface JupStoreInt {
 	txids: Array<TransactionHistory> | null;
 	errors: Array<TransactionError> | null;
 	init: () => Promise<void>;
-	getTokensDropdown: () => TokensDropdown | undefined;
-	getAvailablePairedTokenDropdown: (inputMint: string) => TokensDropdown | undefined;
-	getRoutePropDropdown: () => routePropDropdown | undefined;
+	getTokensDropdown: () => Array<CustomDropdownOption> | undefined;
+	getAvailablePairedTokenDropdown: (inputMint: string) => Array<CustomDropdownOption> | undefined;
+	getRoutePropDropdown: () => Array<CustomDropdownOption> | undefined;
 	getComputedRoutes: () => Promise<Array<RouteInfo> | null>;
 	setWallet: (wallet: SignerWalletAdapter) => void;
 	exchange: (wallet: SignerWalletAdapter) => Promise<void>;
@@ -94,8 +91,9 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		const routeMap = jupiter.getRouteMap();
 		set({ jupiter, tokens, routeMap });
 	},
-	getTokensDropdown: (): TokensDropdown | undefined => get().tokens?.map(token => [token.name, token.address]),
-	getAvailablePairedTokenDropdown: (inputMint: string): TokensDropdown | undefined => {
+	getTokensDropdown: () =>
+		get().tokens?.map(({ logoURI, symbol, address }) => ({ img: logoURI, label: symbol, value: address })),
+	getAvailablePairedTokenDropdown: (inputMint: string) => {
 		const { tokens, routeMap } = get();
 		const possiblePairedToken = routeMap?.get(inputMint);
 
@@ -105,13 +103,17 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 
 				if (!token) return undefined;
 
-				return [token?.name, token?.address];
+				return {
+					img: token.logoURI,
+					label: token.symbol,
+					value: token.address,
+				};
 			})
 			.filter(Boolean);
 	},
-	getRoutePropDropdown: (): routePropDropdown | undefined =>
+	getRoutePropDropdown: () =>
 		Object.entries(ROUTES_PROPS)
-			.map(([key, value]) => [startCase(key), `${value}`])
+			.map(([key, value]) => ({ label: startCase(key), value }))
 			.filter(Boolean),
 	getComputedRoutes: async () => {
 		const { blocklyState, tokens, jupiter } = get();

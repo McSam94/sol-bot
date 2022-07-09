@@ -7,6 +7,7 @@ import { CoinGeckoClient, CoinListResponseItem } from 'coingecko-api-v3';
 import { WRAPPED_SOL } from '@constants/coin';
 import { fromDecimal } from '@utils/number';
 import { convertStoreToHooks } from '@utils/store';
+import { CustomDropdownOption } from '@blockly/fields/dropdown';
 
 const coinGeckoClient = new CoinGeckoClient({
 	timeout: 10000,
@@ -34,8 +35,8 @@ interface TokenStoreInt {
 	getUserBalances: (walletPubKey: PublicKey) => Promise<void>;
 	getBalance: (tokenMint: string) => string;
 	setWallet: (wallet: SignerWalletAdapter) => void;
-	getCoinDropdown: () => Array<Array<string>> | undefined;
-	getCurrencyDropdown: () => Array<Array<string>> | undefined;
+	getCoinDropdown: () => Array<CustomDropdownOption> | undefined;
+	getCurrencyDropdown: () => Array<CustomDropdownOption> | undefined;
 	getTokenPrice: (tokenMint: string, currency: string) => Promise<number>;
 }
 
@@ -115,10 +116,10 @@ const TokenStore = create<TokenStoreInt>((set, get) => ({
 		set({ wallet });
 	},
 	getCoinDropdown: () => {
-		return get().coins?.map(({ name, id }) => [name ?? '', id ?? '']) ?? [];
+		return get().coins?.map(({ symbol, id }) => ({ label: symbol ?? '', value: id ?? '' })) ?? [];
 	},
 	getCurrencyDropdown: () => {
-		return get().currencies?.map(currency => [currency.toUpperCase(), currency]);
+		return get().currencies?.map(currency => ({ label: currency.toUpperCase(), value: currency }));
 	},
 	getTokenPrice: async (tokenId: string, currency: string) => {
 		const price = await coinGeckoClient.simplePrice({ ids: tokenId, vs_currencies: currency });

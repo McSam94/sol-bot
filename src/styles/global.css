@@ -6,3 +6,14 @@
 svg[display='none'] {
 	display: none;
 }
+
+.blocklyDropdownContentDiv {
+	display: flex;
+	flex-direction: column;
+}
+
+.blocklyDropdownRow {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}

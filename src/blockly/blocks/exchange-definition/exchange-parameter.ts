@@ -14,8 +14,8 @@ Blockly.Blocks.exchange_parameter = {
 		const receiveDropdownOptions = JupStore.getState()?.getAvailablePairedTokenDropdown(payToken);
 		if (!receiveDropdownOptions) return;
 
-		receiveDropdown.menuGenerator_ = receiveDropdownOptions;
-		receiveDropdown.setValue(receiveDropdownOptions?.[0][1]);
+		receiveDropdown.updateMenu(receiveDropdownOptions);
+		receiveDropdown.setValue(receiveDropdownOptions?.[0].value);
 	},
 	definition() {
 		const _this = this;
@@ -23,17 +23,16 @@ Blockly.Blocks.exchange_parameter = {
 			message0: 'You pay: %1, You receive: %2',
 			args0: [
 				{
-					type: 'field_dropdown',
+					type: 'custom_dropdown',
 					name: 'PAY_TOKEN_LIST',
-					options: JupStore.getState().getTokensDropdown() ?? [['', '']],
+					options: JupStore.getState().getTokensDropdown() ?? [],
 				},
 				{
-					type: 'field_dropdown',
+					type: 'custom_dropdown',
 					name: 'RECEIVE_TOKEN_LIST',
 					options: () =>
-						JupStore.getState()?.getAvailablePairedTokenDropdown(_this.getFieldValue('PAY_TOKEN_LIST')) ?? [
-							['', ''],
-						],
+						JupStore.getState()?.getAvailablePairedTokenDropdown(_this.getFieldValue('PAY_TOKEN_LIST')) ??
+						[],
 				},
 			],
 			colour: '#4E6882',

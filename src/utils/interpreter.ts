@@ -15,9 +15,15 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		jsInterpreter.createNativeFunction((message: string) => alert(message))
 	);
 
-	jsInterpreter.setProperty(scope, 'info', jsInterpreter.createNativeFunction(toast.info));
-	jsInterpreter.setProperty(scope, 'warn', jsInterpreter.createNativeFunction(toast.warn));
-	jsInterpreter.setProperty(scope, 'error', jsInterpreter.createNativeFunction(toast.error));
+	jsInterpreter.setProperty(
+		scope,
+		'toast',
+		jsInterpreter.createNativeFunction((content: string, type: 'info' | 'warn' | 'error') => {
+			toast[type](content, {
+				toastId: 'interpreter',
+			});
+		})
+	);
 
 	// Update Jup Params
 	jsInterpreter.setProperty(
@@ -40,7 +46,8 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 				.getComputedRoutes()
 				.then(routesInfos => {
 					callback(jsInterpreter.nativeToPseudo(routesInfos?.splice(0, 10)));
-				});
+				})
+				.catch(() => callback([]));
 		})
 	);
 
@@ -78,7 +85,8 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		jsInterpreter.createAsyncFunction(function (wallet: SignerWalletAdapter, callback: Function) {
 			JupStore.getState()
 				.exchange(wallet)
-				.then(() => callback());
+				.then(() => callback())
+				.catch(() => callback());
 		})
 	);
 
@@ -128,7 +136,8 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		jsInterpreter.createAsyncFunction(function (tokenId: string, currency: string, callback: Function) {
 			TokenStore.getState()
 				.getTokenPrice(tokenId, currency)
-				.then(price => callback(price));
+				.then(price => callback(price))
+				.catch(() => callback(0));
 		})
 	);
 }

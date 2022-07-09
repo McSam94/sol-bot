@@ -10,12 +10,12 @@ Blockly.Blocks.token_price = {
 			message0: 'Token price of %1 in %2',
 			args0: [
 				{
-					type: 'field_dropdown',
+					type: 'custom_dropdown',
 					name: 'TOKEN_PRICE',
 					options: TokenStore.getState().getCoinDropdown() ?? [['', '']],
 				},
 				{
-					type: 'field_dropdown',
+					type: 'custom_dropdown',
 					name: 'CONVERT_CURRENCY',
 					options: TokenStore.getState().getCurrencyDropdown() ?? [['', '']],
 				},

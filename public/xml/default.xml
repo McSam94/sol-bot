@@ -61,29 +61,53 @@
   </block>
   <block type="exchange_condition" id="cztYI:@F-MO)}W[)tN0k" x="117" y="378">
     <statement name="EXCHANGE_CONDITION">
-      <block type="controls_if" id="DkRO*(Fi!qHQoc!f0n[Z">
-        <value name="IF0">
-          <block type="logic_compare" id="2jnXQ8Z2S!}u8q!.GUuj">
-            <field name="OP">GT</field>
-            <value name="A">
-              <block type="route_property" id="ES3Q!Q0Irfw?SytjTU~6">
-                <field name="ROUTE_PROPERTY">outAmount</field>
-              </block>
-            </value>
-            <value name="B">
-              <block type="math_number" id="DsfRLC}Wcn]w-!!P=~Dk">
-                <field name="NUM">1.002</field>
-              </block>
-            </value>
-          </block>
+      <block type="toast" id="T6zzlR($Xd$VP}y?6S(Q">
+        <field name="TOAST_OPTIONS">info</field>
+        <value name="TEXT">
+          <shadow type="text" id="PvQNO0CDE7e]Z+n-zkW}">
+            <field name="TEXT">Checking exchange condition</field>
+          </shadow>
         </value>
-        <statement name="DO0">
-          <block type="exchange_swap" id="p[5WrBhRa*NEjHmi~bXq"></block>
-        </statement>
+        <next>
+          <block type="controls_if" id="DkRO*(Fi!qHQoc!f0n[Z">
+            <value name="IF0">
+              <block type="logic_compare" id="2jnXQ8Z2S!}u8q!.GUuj">
+                <field name="OP">GT</field>
+                <value name="A">
+                  <block type="route_property" id="ES3Q!Q0Irfw?SytjTU~6">
+                    <field name="ROUTE_PROPERTY">outAmount</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="math_arithmetic" id="t#?f3j]rVr,Yh5K_X+:#">
+                    <field name="OP">ADD</field>
+                    <value name="A">
+                      <shadow type="math_number" id=";OhOvn{c@B_NprVV9VyY">
+                        <field name="NUM">1</field>
+                      </shadow>
+                      <block type="token_price" id="3W*p$1up=xsp#.i7#]k*">
+                        <field name="TOKEN_PRICE">usd-coin</field>
+                        <field name="CONVERT_CURRENCY">usd</field>
+                      </block>
+                    </value>
+                    <value name="B">
+                      <shadow type="math_number" id="=b8M3}*bl0Z^K9N)fR%d">
+                        <field name="NUM">0.002</field>
+                      </shadow>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="exchange_swap" id="p[5WrBhRa*NEjHmi~bXq"></block>
+            </statement>
+          </block>
+        </next>
       </block>
     </statement>
   </block>
-  <block type="loop_condition" id=";NRPq,**wn4_%aV3p!/z" x="121" y="537">
+  <block type="loop_condition" id=";NRPq,**wn4_%aV3p!/z" x="120" y="571">
     <statement name="LOOP_CONDITION">
       <block type="console" id="mU$tI-jDHgFYya2=$9df">
         <value name="TEXT">

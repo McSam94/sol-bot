@@ -9,12 +9,12 @@ Blockly.Blocks.toast = {
 			message0: 'toast %1 %2',
 			args0: [
 				{
-					type: 'field_dropdown',
+					type: 'custom_dropdown',
 					name: 'TOAST_OPTIONS',
 					options: [
-						['Info', 'info'],
-						['Warn', 'warn'],
-						['Error', 'error'],
+						{ label: 'Info', value: 'info' },
+						{ label: 'Warn', value: 'warn' },
+						{ label: 'Error', value: 'error' },
 					],
 				},
 				{
@@ -33,5 +33,5 @@ Blockly.JavaScript.toast = (block: BlockSvg) => {
 	const toastOptions = block.getFieldValue('TOAST_OPTIONS');
 	const msg = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "''";
 
-	return `${toastOptions}(${msg});\n`;
+	return `toast(${msg}, '${toastOptions}');\n`;
 };
