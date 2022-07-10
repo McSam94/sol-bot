@@ -40,6 +40,8 @@ export const generateCode = (code: string) => {
 
 				if (JupLoop) {
 					shouldLoop = JupLoop();
+				} else {
+					shouldLoop = false;
 				}
 			} catch (error) {
 				console.error(error);

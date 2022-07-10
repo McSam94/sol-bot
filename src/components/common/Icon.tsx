@@ -8,6 +8,8 @@ const IconSrc: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>
 	stop: dynamic(() => import('public/icons/stop.svg')),
 	save: dynamic(() => import('public/icons/save.svg')),
 	upload: dynamic(() => import('public/icons/upload.svg')),
+	exchange: dynamic(() => import('public/icons/exchange.svg')),
+	more: dynamic(() => import('public/icons/more.svg')),
 };
 
 interface IconProps {
@@ -24,6 +26,7 @@ const Icon: React.FunctionComponent<IconProps & React.SVGProps<SVGSVGElement>> =
 	height,
 	width,
 	size = 20,
+	fill,
 	...props
 }) => {
 	const [isHovered, setIsHovered] = React.useState(false);
@@ -34,7 +37,7 @@ const Icon: React.FunctionComponent<IconProps & React.SVGProps<SVGSVGElement>> =
 
 	return (
 		<Component
-			fill={colorFn?.({ hover: isHovered }) ?? color ?? 'black'}
+			fill={colorFn?.({ hover: isHovered }) ?? color ?? fill}
 			width={width ?? size}
 			height={height ?? size}
 			onMouseEnter={() => setIsHovered(true)}

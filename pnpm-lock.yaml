@@ -21,6 +21,8 @@ specifiers:
   '@types/react-dom': 18.0.5
   '@types/react-modal': ^3.13.1
   '@types/react-tooltip': ^4.2.4
+  '@types/yaireo__relative-time': ^1.0.0
+  '@yaireo/relative-time': ^1.0.2
   autoprefixer: ^10.4.7
   blockly: ^8.0.3
   bs58: ^5.0.0
@@ -42,6 +44,7 @@ specifiers:
   react-toastify: ^9.0.5
   react-tooltip: ^4.2.21
   react-use: ^17.4.0
+  relative-time: link:@types/@yaireo/relative-time
   tailwindcss: ^3.1.4
   typescript: 4.7.4
   zustand: 4.0.0-rc.1
@@ -58,6 +61,7 @@ dependencies:
   '@solana/web3.js': 1.47.1
   '@types/lodash.startcase': 4.4.7
   '@types/react-tooltip': 4.2.4_biqbaboplfbrettd7655fr4n2y
+  '@yaireo/relative-time': 1.0.2
   blockly: 8.0.3
   bs58: 5.0.0
   classnames: 2.3.1
@@ -87,10 +91,12 @@ devDependencies:
   '@types/react': 18.0.14
   '@types/react-dom': 18.0.5
   '@types/react-modal': 3.13.1
+  '@types/yaireo__relative-time': 1.0.0
   autoprefixer: 10.4.7_postcss@8.4.14
   eslint: 8.19.0
   eslint-config-next: 12.2.0_4x5o4skxv6sl53vpwefgt23khm
   postcss: 8.4.14
+  relative-time: link:@types/@yaireo/relative-time
   tailwindcss: 3.1.4
   typescript: 4.7.4
 
@@ -3050,6 +3056,10 @@ packages:
       '@types/node': 18.0.0
     dev: false
 
+  /@types/yaireo__relative-time/1.0.0:
+    resolution: {integrity: sha512-ULHyFo07xahtiWs0u2h99TKv10Brx3K+Ev6tunHCSAkJFPOD937iNlSvGdZTZo87zZuq8u6n2naiYlGwzBTwWw==}
+    dev: true
+
   /@typescript-eslint/parser/5.30.3_4x5o4skxv6sl53vpwefgt23khm:
     resolution: {integrity: sha512-ddwGEPC3E49DduAUC8UThQafHRE5uc1NE8jdOgl+w8/NrYF50MJQNeD3u4JZrqAXdY9rJz0CdQ9HpNME20CzkA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
@@ -3130,6 +3140,10 @@ packages:
 
   /@xobotyi/scrollbar-width/1.9.5:
     resolution: {integrity: sha512-N8tkAACJx2ww8vFMneJmaAgmjAG1tnVBZJRLRcx061tmsLRZHSEZSLuGWnwPtunsSLvSqXQ2wfp7Mgqg1I+2dQ==}
+    dev: false
+
+  /@yaireo/relative-time/1.0.2:
+    resolution: {integrity: sha512-suOm+MopHtPemY/ZYl/ZHsdrJ14ofafgQACICa2zzbvwM9TTJLjJddtvyChd+0T6G+g5OqwEf2QVhGZbMIBV1A==}
     dev: false
 
   /JSONStream/1.3.5:

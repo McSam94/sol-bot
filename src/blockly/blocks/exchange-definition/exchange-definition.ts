@@ -111,10 +111,10 @@ Blockly.JavaScript.exchange_definition = (block: BlockSvg) => {
 			slippage = ${slippage};
 			amount = ${exchangeAmount};
 
-			updateJupParam('inputMint', inputMint);
-			updateJupParam('outputMint', '${receiveToken}');
-			updateJupParam('slippage', ${slippage})
-			updateJupParam('amount', ${exchangeAmount});
+			updateJupParam('inputToken', inputMint);
+			updateJupParam('outputToken', outputMint);
+			updateJupParam('slippage', slippage)
+			updateJupParam('amount', amount);
 		}
 	`;
 };

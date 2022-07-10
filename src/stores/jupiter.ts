@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Cluster, Connection, PublicKey, TransactionError as Web3TransactionError } from '@solana/web3.js';
+import { Cluster, Connection, PublicKey } from '@solana/web3.js';
 import { Jupiter, RouteInfo, SwapResult, TOKEN_LIST_URL } from '@jup-ag/core';
-import { SignerWalletAdapter, WalletAdapter } from '@solana/wallet-adapter-base';
+import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import create from 'zustand/vanilla';
 import startCase from 'lodash.startcase';
 import { NETWORK, RPC_ENDPOINT } from '@constants/connection';
@@ -9,7 +9,7 @@ import { ROUTES_PROPS } from '@constants/routes';
 import { convertStoreToHooks } from '@utils/store';
 import { CustomDropdownOption } from '@blockly/fields/dropdown';
 
-interface Token {
+export interface Token {
 	chainId: number;
 	address: string;
 	symbol: string;
@@ -20,8 +20,8 @@ interface Token {
 }
 
 export interface BlocklyState {
-	inputMint: string | undefined;
-	outputMint: string | undefined;
+	inputToken: Token | undefined;
+	outputToken: Token | undefined;
 	amount: number | undefined;
 	slippage: number | undefined;
 	selectedRouteIndex: number | undefined;
@@ -29,22 +29,23 @@ export interface BlocklyState {
 	shouldTradeAgain: boolean | undefined;
 }
 
-interface ImageDropdown {
-	src: string;
-	width: number;
-	height: number;
-	alt: string;
-}
-
 interface TransactionHistory {
-	dateTime: string;
+	dateTime: Date;
 	txid: string;
+	param: {
+		inputToken: Token | undefined;
+		outputToken: Token | undefined;
+		inAmount: number;
+		outAmount: number;
+		slippage: number;
+		routes: Array<string>;
+	};
 }
 
 interface TransactionError {
+	dateTime: Date;
 	message: string;
 	txid: string | null;
-	dateTime: string;
 }
 
 interface JupStoreInt {
@@ -69,8 +70,8 @@ interface JupStoreInt {
 }
 
 const initialBlocklyState = {
-	inputMint: undefined,
-	outputMint: undefined,
+	inputToken: undefined,
+	outputToken: undefined,
 	amount: undefined,
 	slippage: undefined,
 	selectedRouteIndex: undefined,
@@ -131,18 +132,17 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 			return computedRoutes;
 		}
 
-		const { inputMint, outputMint, amount, slippage } = blocklyState;
-		const inputToken = tokens?.find(token => token.address === inputMint);
+		const { inputToken, outputToken, amount, slippage } = blocklyState;
 
 		const amountNum = +(amount ?? 0);
 		const slippageNum = +(slippage ?? 0);
-		if (!inputToken || !inputMint || !outputMint || !amountNum || !slippageNum) return null;
+		if (!inputToken || !outputToken || !amountNum || !slippageNum) return null;
 
 		const newComputedRoutes: Array<RouteInfo> | null =
 			(
 				await jupiter?.computeRoutes({
-					inputMint: new PublicKey(inputMint),
-					outputMint: new PublicKey(outputMint),
+					inputMint: new PublicKey(inputToken.address),
+					outputMint: new PublicKey(outputToken.address),
 					inputAmount: amountNum * 10 ** inputToken.decimals,
 					slippage: slippageNum,
 				})
@@ -159,22 +159,22 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		set({ jupiter });
 	},
 	exchange: async (wallet: SignerWalletAdapter) => {
-		const { jupiter, computedRoutes } = get();
+		const { jupiter, computedRoutes, blocklyState } = get();
 
 		if (!jupiter) throw new Error('Jupiter not initialized');
 		if (!computedRoutes) throw new Error('Best route not found');
 		if (!wallet) throw new Error('Wallet not found');
 
+		const bestRoute = computedRoutes[0];
 		const { execute } = await jupiter?.exchange({
-			routeInfo: computedRoutes[0],
+			routeInfo: bestRoute,
 		});
 
 		const swapResult: SwapResult = await execute({
 			wallet,
 		});
-		console.log('🚀 ~ swapResult', swapResult);
 
-		const dateTime = new Date().toLocaleTimeString();
+		const dateTime = new Date();
 		if ('error' in swapResult) {
 			const { error } = swapResult;
 			if (!error) return;
@@ -186,9 +186,25 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		}
 
 		if ('txid' in swapResult) {
+			const { inputToken, outputToken, slippage } = blocklyState;
+			const { inAmount, outAmount } = bestRoute;
 			set(prevState => ({
 				...prevState,
-				txids: [{ dateTime, txid: swapResult.txid }, ...(prevState.txids ?? [])],
+				txids: [
+					{
+						dateTime,
+						txid: swapResult.txid,
+						param: {
+							inputToken,
+							outputToken,
+							inAmount,
+							outAmount,
+							slippage: slippage ?? 0,
+							routes: bestRoute.marketInfos.map(marketInfo => marketInfo.amm.label),
+						},
+					},
+					...(prevState.txids ?? []),
+				],
 			}));
 		}
 	},

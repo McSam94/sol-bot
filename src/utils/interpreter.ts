@@ -27,12 +27,22 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 	jsInterpreter.setProperty(
 		scope,
 		'updateJupParam',
-		jsInterpreter.createNativeFunction((key: string, value: string) =>
-			JupStore.setState(prevState => ({
-				...prevState,
-				blocklyState: { ...prevState.blocklyState, [key]: value },
-			}))
-		)
+		jsInterpreter.createNativeFunction((key: string, value: string) => {
+			const { tokens } = JupStore.getState();
+			if (['inputToken', 'outputToken'].includes(key)) {
+				const token = tokens?.find(token => token.address === value);
+
+				JupStore.setState(prevState => ({
+					...prevState,
+					blocklyState: { ...prevState.blocklyState, [key]: token },
+				}));
+			} else {
+				JupStore.setState(prevState => ({
+					...prevState,
+					blocklyState: { ...prevState.blocklyState, [key]: value },
+				}));
+			}
+		})
 	);
 
 	// Update routes cache time
@@ -47,7 +57,10 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		scope,
 		'computeRoutes',
 		jsInterpreter.createAsyncFunction(function (callback: Function) {
-			const { getComputedRoutes } = JupStore.getState();
+			const {
+				getComputedRoutes,
+				blocklyState: { inputToken, outputToken, amount },
+			} = JupStore.getState();
 
 			toast.promise(
 				() =>
@@ -57,7 +70,7 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 						})
 						.catch(() => callback([])),
 				{
-					pending: 'Finding the best routes',
+					pending: `Finding the best routes for ${amount} ${inputToken?.symbol} → ${outputToken?.symbol}`,
 				}
 			);
 		})
@@ -75,7 +88,7 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 			const bestRoute = computedRoutes[0];
 			const { inAmount, outAmount } = bestRoute;
 
-			const bestRouteReceiveToken = tokens?.find(token => token.address === blocklyState.outputMint);
+			const bestRouteReceiveToken = tokens?.find(token => token.address === blocklyState.outputToken?.address);
 			if (!bestRouteReceiveToken) return;
 
 			const bestRouteProp = {
