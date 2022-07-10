@@ -1,6 +1,6 @@
 import Interpreter from 'js-interpreter-npm';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
-import { toast, ToastOptions } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { RouteProp } from '@constants/routes';
 import TokenStore from '@stores/token';
 import JupStore from '@stores/jupiter';
@@ -109,10 +109,13 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		scope,
 		'executeSwap',
 		jsInterpreter.createAsyncFunction(function (wallet: SignerWalletAdapter, callback: Function) {
-			const { exchange } = JupStore.getState();
+			const { exchange, blocklyState, computedRoutes } = JupStore.getState();
 
+			const bestRoutes = computedRoutes?.[0];
+			const { amount, inputToken, outputToken } = blocklyState;
+			const outAmount = fromDecimal(bestRoutes?.outAmount ?? 0, outputToken?.decimals ?? 0);
 			toast.promise(() => exchange(wallet).finally(() => callback()), {
-				pending: 'Exchanging in progress...',
+				pending: `Swapping ${amount} ${inputToken?.symbol} with ${outAmount} ${outputToken?.symbol}`,
 				success: 'Swapped successfully',
 				error: 'Swapped failed',
 			});
