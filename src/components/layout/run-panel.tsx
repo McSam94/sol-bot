@@ -171,11 +171,13 @@ const RunPanel: React.FC = () => {
 												<Link
 													className='underline'
 													href={`https://solscan.io/tx/${txid}`}
-													target='_blank'
 													rel='noreferrer'
 													passHref
 												>
-													<a className='flex flex-row items-center border border-gray-300 hover:border-gray-500 rounded p-1'>
+													<a
+														target='_blank'
+														className='flex flex-row items-center border border-gray-300 hover:border-gray-500 rounded p-1'
+													>
 														<Image
 															src='/icons/solscan.svg'
 															width={60}
@@ -228,11 +230,13 @@ const RunPanel: React.FC = () => {
 													<Link
 														className='underline'
 														href={`https://solscan.io/tx/${txid}`}
-														target='_blank'
 														rel='noreferrer'
 														passHref
 													>
-														<a className='flex flex-row items-center border border-gray-300 hover:shadow-lg rounded p-1'>
+														<a
+															target='_blank'
+															className='flex flex-row items-center border border-gray-300 hover:shadow-lg rounded p-1'
+														>
 															<Image
 																src='/icons/solscan.svg'
 																width={60}
