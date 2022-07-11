@@ -1,4 +1,5 @@
-import Blockly from 'blockly';
+import Blockly, { BlockSvg } from 'blockly';
+import { getInputValue } from '@utils/blockly';
 
 Blockly.Blocks.exchange_amount = {
 	init() {
@@ -21,4 +22,12 @@ Blockly.Blocks.exchange_amount = {
 	},
 };
 
-Blockly.JavaScript.exchange_amount = () => '';
+Blockly.JavaScript.exchange_amount = (block: BlockSvg) => {
+	const value = getInputValue(block, 'EXCHANGE_AMOUNT');
+
+	return `
+		amount = ${value};
+
+		updateJupParam('amount', amount);
+	`;
+};

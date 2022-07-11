@@ -33,7 +33,7 @@ interface TokenStoreInt {
 	currencies: Array<string> | null;
 	init: () => void;
 	getUserBalances: (walletPubKey: PublicKey) => Promise<void>;
-	getBalance: (tokenMint: string) => string;
+	getBalance: (wallet: SignerWalletAdapter, tokenMint: string) => Promise<number>;
 	setWallet: (wallet: SignerWalletAdapter) => void;
 	getCoinDropdown: () => Array<CustomDropdownOption> | undefined;
 	getCurrencyDropdown: () => Array<CustomDropdownOption> | undefined;
@@ -99,13 +99,27 @@ const TokenStore = create<TokenStoreInt>((set, get) => ({
 
 		set({ userBalances });
 	},
-	getBalance: (tokenMint: string) => {
-		const { userBalances } = get();
+	getBalance: async (wallet: SignerWalletAdapter, tokenMint: string) => {
+		const { connection } = get();
 
-		// const ataAccount = getATASync(walletPubKey, new PublicKey(tokenMint));
-		const tokenAccountInfo = userBalances.get(tokenMint);
+		if (!wallet.publicKey) return null;
 
-		return tokenAccountInfo?.info.tokenAmount.uiAmountString ?? '0';
+		if (tokenMint === WRAPPED_SOL.address) {
+			const nativeBalance = await connection.getBalance(wallet.publicKey, 'confirmed');
+			return fromDecimal(nativeBalance, 9);
+		}
+
+		const { value: accountsValue } = await connection.getParsedTokenAccountsByOwner(
+			wallet.publicKey,
+			{
+				programId: TOKEN_PROGRAM_ID,
+			},
+			'confirmed'
+		);
+
+		const accountValue = accountsValue.find(({ account }) => account.data.parsed.info.mint === tokenMint);
+
+		return accountValue?.account.data.parsed.info.tokenAmount.uiAmount ?? 0;
 	},
 	setWallet: (wallet: SignerWalletAdapter) => {
 		const { getUserBalances } = get();

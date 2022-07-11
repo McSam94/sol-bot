@@ -85,15 +85,14 @@ Blockly.Blocks.exchange_definition = {
 Blockly.JavaScript.exchange_definition = (block: BlockSvg) => {
 	const paramBlock = getChildByType(block, 'exchange_parameter');
 	const slippageBlock = getChildByType(block, 'exchange_slippage');
-	const amountBlock = getChildByType(block, 'exchange_amount');
 	const payToken = paramBlock?.getFieldValue('PAY_TOKEN_LIST');
 	const receiveToken = paramBlock?.getFieldValue('RECEIVE_TOKEN_LIST');
 
-	let slippage, exchangeAmount;
+	let slippage;
 	if (slippageBlock) slippage = getInputValue(slippageBlock, 'SLIPPAGE');
-	if (amountBlock) exchangeAmount = getInputValue(amountBlock, 'EXCHANGE_AMOUNT');
 
 	const initialization = Blockly.JavaScript.statementToCode(block, 'INITIALIZATION');
+	const stack = Blockly.JavaScript.statementToCode(block, 'EXCHANGE_AMOUNT');
 
 	return `
 		${initialization.trim()}
@@ -107,12 +106,12 @@ Blockly.JavaScript.exchange_definition = (block: BlockSvg) => {
 			inputMint = '${payToken}';
 			outputMint = '${receiveToken}';
 			slippage = ${slippage};
-			amount = ${exchangeAmount};
 
 			updateJupParam('inputToken', inputMint);
 			updateJupParam('outputToken', outputMint);
 			updateJupParam('slippage', slippage)
-			updateJupParam('amount', amount);
+
+			${stack}
 		}
 	`;
 };

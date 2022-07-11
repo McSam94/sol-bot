@@ -170,9 +170,14 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 	jsInterpreter.setProperty(
 		scope,
 		'getBalance',
-		jsInterpreter.createNativeFunction(function (tokenMint: string) {
-			const balance = TokenStore.getState().getBalance(tokenMint);
-			return balance;
+		jsInterpreter.createAsyncFunction(function (
+			wallet: SignerWalletAdapter,
+			tokenMint: string,
+			callback: Function
+		) {
+			TokenStore.getState()
+				.getBalance(wallet, tokenMint)
+				.then(balance => callback(balance));
 		})
 	);
 

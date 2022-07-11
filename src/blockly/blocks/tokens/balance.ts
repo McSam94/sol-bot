@@ -24,5 +24,5 @@ Blockly.Blocks.balance = {
 Blockly.JavaScript.balance = (block: BlockSvg) => {
 	const tokenMint = block.getFieldValue('TOKEN_BALANCE');
 
-	return [`Number(getBalance('${tokenMint}'))`, Blockly.JavaScript.ORDER_ATOMIC];
+	return [`Number(getBalance(wallet, '${tokenMint}'))`, Blockly.JavaScript.ORDER_ATOMIC];
 };
