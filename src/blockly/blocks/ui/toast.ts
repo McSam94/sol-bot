@@ -15,6 +15,7 @@ Blockly.Blocks.toast = {
 						{ label: 'Success', value: 'success' },
 						{ label: 'Error', value: 'error' },
 					],
+					search: false,
 				},
 				{
 					type: 'input_value',
