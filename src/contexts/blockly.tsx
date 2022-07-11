@@ -210,6 +210,8 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 	// first render workspace
 	React.useEffect(() => {
 		renderWorkspace();
+
+		() => setWorkspace(undefined);
 	}, [renderWorkspace]);
 
 	return (

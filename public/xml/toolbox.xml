@@ -34,6 +34,7 @@
 	<category name="Exchange Condition" colour="#020029">
 		<block type="exchange_condition"></block>
 		<block type="exchange_swap"></block>
+		<block type="exchange_result"></block>
 	</category>
 	<category name="Exchange Again" colour="#020029">
 		<block type="loop_condition"></block>

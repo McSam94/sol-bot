@@ -19,6 +19,11 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		scope,
 		'toast',
 		jsInterpreter.createNativeFunction((content: string, type: 'success' | 'error') => {
+			console.log(
+				'🚀 ~ file: interpreter.ts ~ line 22 ~ jsInterpreter.createNativeFunction ~ content',
+				content,
+				type
+			);
 			toast[type](content);
 		})
 	);
@@ -123,6 +128,17 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 					error: 'Swapped failed',
 				}
 			);
+		})
+	);
+
+	// Swap Result
+	jsInterpreter.setProperty(
+		scope,
+		'getSwapResult',
+		jsInterpreter.createNativeFunction(function (type: 'success' | 'failed') {
+			const { swapResult } = JupStore.getState();
+
+			return type === 'success' ? swapResult : !swapResult;
 		})
 	);
 
