@@ -43,12 +43,6 @@ const RunPanel: React.FC = () => {
 		[connected, botStatus, isWorkspaceReady, invalidBlocks, missingMandatoryBlocks, extraBlocks]
 	);
 
-	const buttonIcon = React.useMemo(() => {
-		if (botStatus === 'running') return 'stop';
-
-		return 'play';
-	}, [botStatus]);
-
 	const runTooltip = React.useMemo(() => {
 		if (!connected) return 'Wallet not connected.';
 
@@ -232,7 +226,11 @@ const RunPanel: React.FC = () => {
 							className='shadow-lg hover:shadow-none'
 						>
 							<span data-tip={runTooltip} data-for='tooltip_main' data-tip-disable={false}>
-								<Icon name={buttonIcon} color='white' />
+								{botStatus === 'running' ? (
+									<Icon name='stop' color='white' />
+								) : (
+									<Icon name='play' color='white' />
+								)}
 							</span>
 						</Button>
 

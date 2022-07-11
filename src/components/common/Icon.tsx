@@ -1,7 +1,7 @@
 import * as React from 'react';
 import dynamic from 'next/dynamic';
 
-const IconSrc: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+const IconSrc = {
 	trash: dynamic(() => import('public/icons/trash.svg')),
 	clear: dynamic(() => import('public/icons/clear.svg')),
 	play: dynamic(() => import('public/icons/play.svg')),
@@ -14,7 +14,7 @@ const IconSrc: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>
 };
 
 interface IconProps {
-	name: string;
+	name: keyof typeof IconSrc;
 	color?: string;
 	colorFn?: ({ hover }: { hover: boolean }) => string;
 	[x: string]: any;
@@ -32,7 +32,7 @@ const Icon: React.FunctionComponent<IconProps & React.SVGProps<SVGSVGElement>> =
 }) => {
 	const [isHovered, setIsHovered] = React.useState(false);
 
-	const Component = React.useMemo(() => IconSrc[name], [name]);
+	const Component: React.ComponentType<React.SVGProps<SVGSVGElement>> = React.useMemo(() => IconSrc[name], [name]);
 
 	if (!Component) return null;
 
