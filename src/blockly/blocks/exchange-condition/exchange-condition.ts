@@ -46,8 +46,6 @@ Blockly.JavaScript.exchange_condition = (block: BlockSvg) => {
 		function JupExchange() {
 			computedRoutes = computeRoutes();
 
-			console.log(Number(getBestRouteProp('outAmountWithSlippage')))
-
 			${stack}
 		}
 	`;
