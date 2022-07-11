@@ -42,8 +42,6 @@ Blockly.JavaScript.loop_condition = (block: BlockSvg) => {
 
 	return `
 		function JupLoop() {
-			console.log('Checking Loop Conditions...');
-
 			var shouldStopFromOutside = shouldBotStop();
 
 			${stack}
