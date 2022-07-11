@@ -1,6 +1,4 @@
 import Blockly from 'blockly';
-import debounce from 'lodash.debounce';
-import startCase from 'lodash.startcase';
 
 export interface CustomDropdownOption {
 	img?: string;
@@ -9,7 +7,7 @@ export interface CustomDropdownOption {
 }
 
 class CustomDropdown extends Blockly.FieldDropdown {
-	constructor(private customMenuGenerator: Array<CustomDropdownOption>) {
+	constructor(private customMenuGenerator: Array<CustomDropdownOption>, private search: boolean = true) {
 		const fieldDropdownOptions = customMenuGenerator.length
 			? customMenuGenerator.map(menu => [menu.label, menu.value])
 			: [['', '']];
@@ -17,14 +15,14 @@ class CustomDropdown extends Blockly.FieldDropdown {
 	}
 
 	static fromJson(param: any): Blockly.FieldDropdown {
-		const { options } = param;
+		const { options, search } = param;
 		if (!options) throw new Error('No options provided to CustomDropdown');
 
 		if (typeof options === 'function') {
-			return new CustomDropdown(options());
+			return new CustomDropdown(options(), search);
 		}
 
-		return new CustomDropdown(options);
+		return new CustomDropdown(options, search);
 	}
 
 	private generateMenuList({
@@ -52,7 +50,8 @@ class CustomDropdown extends Blockly.FieldDropdown {
 		};
 
 		let selectedEl;
-		if (this.getValue() === value) {
+		const isSelected = this.getValue() === value;
+		if (isSelected) {
 			selectedEl = document.createElement('div');
 			selectedEl.textContent = '✔️';
 		}
@@ -73,8 +72,13 @@ class CustomDropdown extends Blockly.FieldDropdown {
 		const labelEl = document.createElement('div');
 		labelEl.textContent = label;
 		labelEl.classList.add('text-sm');
-		labelEl.classList.add('font-medium');
-		labelEl.classList.add('text-black/50');
+		if (isSelected) {
+			labelEl.classList.add('font-semibold');
+			labelEl.classList.add('text-black');
+		} else {
+			labelEl.classList.add('font-medium');
+			labelEl.classList.add('text-black/50');
+		}
 		rowEl.appendChild(labelEl);
 
 		container.appendChild(rowEl);
@@ -101,20 +105,22 @@ class CustomDropdown extends Blockly.FieldDropdown {
 		container.classList.add('flex');
 		container.classList.add('flex-col');
 
-		const inputContainer = document.createElement('div');
-		inputContainer.classList.add('sticky');
-		inputContainer.classList.add('p-2');
+		if (this.search) {
+			const inputContainer = document.createElement('div');
+			inputContainer.classList.add('sticky');
+			inputContainer.classList.add('p-2');
 
-		const input = document.createElement('input');
-		input.setAttribute('placeholder', 'Search and Enter');
-		input.classList.add('border');
-		input.classList.add('rounded');
-		input.classList.add('p-2');
-		input.classList.add('w-full');
-		input.onchange = this.onInputChange.bind(this);
+			const input = document.createElement('input');
+			input.setAttribute('placeholder', 'Search and Enter');
+			input.classList.add('border');
+			input.classList.add('rounded');
+			input.classList.add('p-2');
+			input.classList.add('w-full');
+			input.onchange = this.onInputChange.bind(this);
 
-		inputContainer.appendChild(input);
-		container.appendChild(inputContainer);
+			inputContainer.appendChild(input);
+			container.appendChild(inputContainer);
+		}
 
 		const dropdownList = document.createElement('div');
 		dropdownList.setAttribute('id', 'custom_dropdown_list');

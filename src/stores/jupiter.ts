@@ -100,7 +100,11 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		set({ jupiter, tokens, routeMap });
 	},
 	getTokensDropdown: () =>
-		get().tokens?.map(({ logoURI, symbol, address }) => ({ img: logoURI, label: symbol, value: address })),
+		get().tokens?.map(({ logoURI, name, symbol, address }) => ({
+			img: logoURI,
+			label: `${name} (${symbol})`,
+			value: address,
+		})),
 	getAvailablePairedTokenDropdown: (inputMint: string) => {
 		const { tokens, routeMap } = get();
 		const possiblePairedToken = routeMap?.get(inputMint);
@@ -113,7 +117,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 
 				return {
 					img: token.logoURI,
-					label: token.symbol,
+					label: `${token.name} (${token.symbol})`,
 					value: token.address,
 				};
 			})

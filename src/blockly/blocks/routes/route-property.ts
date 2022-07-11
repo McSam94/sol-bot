@@ -14,6 +14,7 @@ Blockly.Blocks.route_property = {
 					type: 'custom_dropdown',
 					name: 'ROUTE_PROPERTY',
 					options: JupStore.getState().getRoutePropDropdown() ?? [['', '']],
+					search: false,
 				},
 			],
 			colour: 220,
