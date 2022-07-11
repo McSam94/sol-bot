@@ -56,7 +56,7 @@ interface JupStoreInt {
 	cacheSecond: number;
 	tokens: Array<Token> | null;
 	blocklyState: BlocklyState;
-	txids: Array<TransactionHistory> | null;
+	transactions: Array<TransactionHistory> | null;
 	errors: Array<TransactionError> | null;
 	swapResult: boolean | null;
 	init: () => Promise<void>;
@@ -88,7 +88,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 	computedRoutesLastFetch: null,
 	cacheSecond: 0,
 	tokens: null,
-	txids: null,
+	transactions: null,
 	errors: null,
 	blocklyState: initialBlocklyState,
 	swapResult: null,
@@ -102,7 +102,11 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		set({ jupiter, tokens, routeMap });
 	},
 	getTokensDropdown: () =>
-		get().tokens?.map(({ logoURI, symbol, address }) => ({ img: logoURI, label: symbol, value: address })),
+		get().tokens?.map(({ logoURI, name, symbol, address }) => ({
+			img: logoURI,
+			label: `${name} (${symbol})`,
+			value: address,
+		})),
 	getAvailablePairedTokenDropdown: (inputMint: string) => {
 		const { tokens, routeMap } = get();
 		const possiblePairedToken = routeMap?.get(inputMint);
@@ -115,7 +119,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 
 				return {
 					img: token.logoURI,
-					label: token.symbol,
+					label: `${token.name} (${token.symbol})`,
 					value: token.address,
 				};
 			})
@@ -193,7 +197,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 			const { inAmount, outAmount } = bestRoute;
 			set(prevState => ({
 				...prevState,
-				txids: [
+				transactions: [
 					{
 						dateTime,
 						txid: swapResult.txid,
@@ -206,13 +210,13 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 							routes: bestRoute.marketInfos.map(marketInfo => marketInfo.amm.label),
 						},
 					},
-					...(prevState.txids ?? []),
+					...(prevState.transactions ?? []),
 				],
 				swapResult: true,
 			}));
 		}
 	},
-	clearTransaction: () => set({ txids: [] }),
+	clearTransaction: () => set({ transactions: [] }),
 	clearErrors: () => set({ errors: [] }),
 }));
 
