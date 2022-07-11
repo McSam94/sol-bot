@@ -16,7 +16,6 @@ import useWindow from '@hooks/useWindow';
 import { Modal } from '@components/common';
 import Button from '@components/common/button';
 import Icon from '@components/common/Icon';
-import { useInterval } from 'react-use';
 
 const RunPanel: React.FC = () => {
 	const clientWindow = useWindow();
@@ -204,13 +203,6 @@ const RunPanel: React.FC = () => {
 		runBot();
 		setIsModalOpen(false);
 	}, [runBot]);
-
-	// real time relative time
-	useInterval(
-		() => setState({ transactions: [...(transactions ?? [])] }),
-		transactions?.length ?? 0 > 0 ? 5000 : null
-	);
-	useInterval(() => setState({ errors: [...(errors ?? [])] }), errors?.length ?? 0 > 0 ? 5000 : null);
 
 	React.useEffect(() => {
 		ReactTooltip.rebuild();
