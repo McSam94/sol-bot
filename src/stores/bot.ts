@@ -1,5 +1,4 @@
 import { convertStoreToHooks } from '@utils/store';
-import { Id } from 'react-toastify';
 import create from 'zustand/vanilla';
 
 interface BotStoreInt {
