@@ -8,6 +8,7 @@ Blockly.Blocks.exchange_swap = {
 		return {
 			message0: 'Execute Swap',
 			previousStatement: null,
+			nextStatement: null,
 			colour: '#4E6882',
 			extensions: ['exchange_condition_check'],
 		};

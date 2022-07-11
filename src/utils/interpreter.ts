@@ -126,6 +126,17 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 		})
 	);
 
+	// Swap Result
+	jsInterpreter.setProperty(
+		scope,
+		'getSwapResult',
+		jsInterpreter.createNativeFunction(function (type: 'success' | 'failed') {
+			const { swapResult } = JupStore.getState();
+
+			return type === 'success' ? swapResult : !swapResult;
+		})
+	);
+
 	// Check if stop button is clicked
 	jsInterpreter.setProperty(
 		scope,

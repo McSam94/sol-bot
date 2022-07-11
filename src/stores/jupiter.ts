@@ -58,6 +58,7 @@ interface JupStoreInt {
 	blocklyState: BlocklyState;
 	txids: Array<TransactionHistory> | null;
 	errors: Array<TransactionError> | null;
+	swapResult: boolean | null;
 	init: () => Promise<void>;
 	getTokensDropdown: () => Array<CustomDropdownOption> | undefined;
 	getAvailablePairedTokenDropdown: (inputMint: string) => Array<CustomDropdownOption> | undefined;
@@ -90,6 +91,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 	txids: null,
 	errors: null,
 	blocklyState: initialBlocklyState,
+	swapResult: null,
 	init: async () => {
 		const tokens = await fetch(TOKEN_LIST_URL[NETWORK as Cluster]).then(res => res.json());
 		const jupiter = await Jupiter.load({
@@ -181,6 +183,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 			set(prevState => ({
 				...prevState,
 				errors: [{ dateTime, message: error.message, txid: error.txid ?? null }, ...(prevState.errors ?? [])],
+				swapResult: false,
 			}));
 			throw new Error(error?.message ?? 'Unknown error');
 		}
@@ -205,6 +208,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 					},
 					...(prevState.txids ?? []),
 				],
+				swapResult: true,
 			}));
 		}
 	},

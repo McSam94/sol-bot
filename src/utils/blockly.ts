@@ -31,7 +31,7 @@ export const generateCode = (code: string) => {
 
 		while(shouldLoop) {
 			try {
-				if (!JupDefinition) toast.error('Exchange Parameter block is mandatory to be in the workspace');
+				if (!JupDefinition) toast('Exchange Parameter block is mandatory to be in the workspace', 'error');
 				JupDefinition();
 
 				if (JupExchange) {
@@ -45,7 +45,7 @@ export const generateCode = (code: string) => {
 				}
 			} catch (error) {
 				console.error(error);
-				error(error);
+				toast(error, 'error');
 				shouldLoop = false;
 			}
 		}
