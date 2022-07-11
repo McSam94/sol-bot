@@ -1,11 +1,11 @@
 import Interpreter from 'js-interpreter-npm';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
-import { toast } from 'react-toastify';
 import { RouteProp } from '@constants/routes';
 import TokenStore from '@stores/token';
 import JupStore from '@stores/jupiter';
 import BotStore from '@stores/bot';
 import { fromDecimal } from '@utils/number';
+import toast from 'react-hot-toast';
 
 export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any) {
 	jsInterpreter.setProperty(scope, 'console', jsInterpreter.nativeToPseudo(console));
@@ -18,7 +18,7 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 	jsInterpreter.setProperty(
 		scope,
 		'toast',
-		jsInterpreter.createNativeFunction((content: string, type: 'info' | 'warn' | 'error') => {
+		jsInterpreter.createNativeFunction((content: string, type: 'success' | 'error') => {
 			toast[type](content);
 		})
 	);
@@ -63,14 +63,15 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 			} = JupStore.getState();
 
 			toast.promise(
-				() =>
-					getComputedRoutes()
-						.then(routesInfos => {
-							callback(jsInterpreter.nativeToPseudo(routesInfos?.splice(0, 10)));
-						})
-						.catch(() => callback([])),
+				getComputedRoutes()
+					.then(routesInfos => {
+						callback(jsInterpreter.nativeToPseudo(routesInfos?.splice(0, 10)));
+					})
+					.catch(() => callback([])),
 				{
-					pending: `Finding the best routes for ${amount} ${inputToken?.symbol} → ${outputToken?.symbol}`,
+					loading: `Finding the best routes for \n ${amount} ${inputToken?.symbol} → ${outputToken?.symbol}`,
+					success: 'Best routes found',
+					error: null,
 				}
 			);
 		})
@@ -114,11 +115,14 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 			const bestRoutes = computedRoutes?.[0];
 			const { amount, inputToken, outputToken } = blocklyState;
 			const outAmount = fromDecimal(bestRoutes?.outAmount ?? 0, outputToken?.decimals ?? 0);
-			toast.promise(() => exchange(wallet).finally(() => callback()), {
-				pending: `Swapping ${amount} ${inputToken?.symbol} with ${outAmount} ${outputToken?.symbol}`,
-				success: 'Swapped successfully',
-				error: 'Swapped failed',
-			});
+			toast.promise(
+				exchange(wallet).finally(() => callback()),
+				{
+					loading: `Swapping ${amount} ${inputToken?.symbol} with ${outAmount} ${outputToken?.symbol}`,
+					success: 'Swapped successfully',
+					error: 'Swapped failed',
+				}
+			);
 		})
 	);
 

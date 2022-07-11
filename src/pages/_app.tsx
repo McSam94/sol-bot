@@ -1,10 +1,9 @@
 import dynamic from 'next/dynamic';
-import { ToastContainer } from 'react-toastify';
 import type { AppProps } from 'next/app';
+import { Toaster } from 'react-hot-toast';
 import ContextProvider from '@contexts/index';
 import Layout from '@components/layout';
 
-import 'react-toastify/dist/ReactToastify.css';
 import '../styles/global.css';
 
 const ReactTooltip = dynamic(() => import('react-tooltip'), {
@@ -17,19 +16,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 			<Layout>
 				<Component {...pageProps} />
 			</Layout>
-			<ToastContainer
-				position='bottom-left'
-				autoClose={3000}
-				limit={3}
-				rtl={false}
-				hideProgressBar={false}
-				newestOnTop={false}
-				pauseOnFocusLoss={false}
-				pauseOnHover={false}
-				closeOnClick={false}
-				draggable
-			/>
 			<ReactTooltip id='tooltip_main' />
+			<Toaster position='bottom-left' reverseOrder={false} />
 		</ContextProvider>
 	);
 }

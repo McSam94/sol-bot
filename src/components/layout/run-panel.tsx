@@ -1,9 +1,9 @@
 import * as React from 'react';
 import Link from 'next/link';
 import RelativeTime from '@yaireo/relative-time';
-import { toast } from 'react-toastify';
 import startCase from 'lodash.startcase';
 import ReactTooltip from 'react-tooltip';
+import toast from 'react-hot-toast';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
 import { useJupStore } from '@stores/jupiter';
