@@ -3,7 +3,6 @@ import { Cluster, Connection, PublicKey } from '@solana/web3.js';
 import { Jupiter, RouteInfo, SwapResult, TOKEN_LIST_URL } from '@jup-ag/core';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import create from 'zustand/vanilla';
-import startCase from 'lodash.startcase';
 import { NETWORK, RPC_ENDPOINT } from '@constants/connection';
 import { ROUTES_PROPS } from '@constants/routes';
 import { CustomDropdownOption } from '@blockly/fields/dropdown';
@@ -128,7 +127,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 	},
 	getRoutePropDropdown: () =>
 		Object.entries(ROUTES_PROPS)
-			.map(([key, value]) => ({ label: startCase(key), value }))
+			.map(([key, value]) => ({ label: key, value }))
 			.filter(Boolean),
 	getComputedRoutes: async () => {
 		const { blocklyState, tokens, jupiter, computedRoutesLastFetch, cacheSecond, computedRoutes } = get();

@@ -87,7 +87,7 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 			if (!computedRoutes) return;
 
 			const bestRoute = computedRoutes[0];
-			const { inAmount, outAmount } = bestRoute;
+			const { inAmount, outAmount, outAmountWithSlippage } = bestRoute;
 
 			const bestRouteReceiveToken = tokens?.find(token => token.address === blocklyState.outputToken?.address);
 			if (!bestRouteReceiveToken) return;
@@ -96,8 +96,10 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 				...bestRoute,
 				inAmountLamport: inAmount,
 				outAmountLamport: outAmount,
+				outAmountWithSlippageLamport: outAmountWithSlippage,
 				inAmount: fromDecimal(inAmount, bestRouteReceiveToken.decimals),
 				outAmount: fromDecimal(outAmount, bestRouteReceiveToken.decimals),
+				outAmountWithSlippage: fromDecimal(outAmountWithSlippage, bestRouteReceiveToken.decimals),
 			};
 
 			const propValue = bestRouteProp[routeProp];
