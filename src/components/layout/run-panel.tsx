@@ -53,8 +53,10 @@ const RunPanel: React.FC = () => {
 
 		if (extraBlocks.length > 0) return `${extraBlocks.map(startCase).join(', ')} block must be unique`;
 
+		if (botStatus === 'running') return 'Stop the bot';
+
 		return 'Run the bot';
-	}, [connected, invalidBlocks, missingMandatoryBlocks, extraBlocks]);
+	}, [connected, invalidBlocks, missingMandatoryBlocks, extraBlocks, botStatus]);
 
 	const { listWidth, listHeight } = React.useMemo(() => {
 		const panelWidth = 320;
