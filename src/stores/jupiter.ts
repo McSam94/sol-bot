@@ -56,7 +56,7 @@ interface JupStoreInt {
 	cacheSecond: number;
 	tokens: Array<Token> | null;
 	blocklyState: BlocklyState;
-	txids: Array<TransactionHistory> | null;
+	transactions: Array<TransactionHistory> | null;
 	errors: Array<TransactionError> | null;
 	init: () => Promise<void>;
 	getTokensDropdown: () => Array<CustomDropdownOption> | undefined;
@@ -87,7 +87,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 	computedRoutesLastFetch: null,
 	cacheSecond: 0,
 	tokens: null,
-	txids: null,
+	transactions: null,
 	errors: null,
 	blocklyState: initialBlocklyState,
 	init: async () => {
@@ -194,7 +194,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 			const { inAmount, outAmount } = bestRoute;
 			set(prevState => ({
 				...prevState,
-				txids: [
+				transactions: [
 					{
 						dateTime,
 						txid: swapResult.txid,
@@ -207,12 +207,12 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 							routes: bestRoute.marketInfos.map(marketInfo => marketInfo.amm.label),
 						},
 					},
-					...(prevState.txids ?? []),
+					...(prevState.transactions ?? []),
 				],
 			}));
 		}
 	},
-	clearTransaction: () => set({ txids: [] }),
+	clearTransaction: () => set({ transactions: [] }),
 	clearErrors: () => set({ errors: [] }),
 }));
 

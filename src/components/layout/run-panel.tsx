@@ -4,6 +4,7 @@ import RelativeTime from '@yaireo/relative-time';
 import startCase from 'lodash.startcase';
 import ReactTooltip from 'react-tooltip';
 import toast from 'react-hot-toast';
+import { FixedSizeList as List } from 'react-window';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
 import { useJupStore } from '@stores/jupiter';
@@ -11,13 +12,15 @@ import TokenInfo from '@components/common/tokenIcon';
 import { useBotStore } from '@stores/bot';
 import { useBlockly } from '@contexts/blockly';
 import { WALLET_CANT_SKIP_APPROVAL } from '@constants/wallet';
+import useWindow from '@hooks/useWindow';
 import { Modal } from '@components/common';
 import Button from '@components/common/button';
 import Icon from '@components/common/Icon';
 
 const RunPanel: React.FC = () => {
+	const clientWindow = useWindow();
 	const { connected, wallet } = useWallet();
-	const { txids, errors, clearErrors, clearTransaction, tokens } = useJupStore();
+	const { transactions, errors, clearErrors, clearTransaction, tokens } = useJupStore();
 	const { botStatus, invalidBlocks, missingMandatoryBlocks, extraBlocks } = useBotStore();
 	const { isWorkspaceReady, runBot, stopBot, saveWorkspace, loadWorkspace } = useBlockly();
 
@@ -57,6 +60,115 @@ const RunPanel: React.FC = () => {
 
 		return 'Run the bot';
 	}, [connected, invalidBlocks, missingMandatoryBlocks, extraBlocks]);
+
+	const { listWidth, listHeight } = React.useMemo(() => {
+		const panelWidth = 320;
+		const paddingX = 32;
+
+		const headerHeight = 80;
+		const panelHeight = (clientWindow?.innerHeight ?? 0) - headerHeight;
+		const panelHeader = 240;
+		const panelContentPaddingY = 8 * 2;
+		const panelTitle = 28 * 2;
+
+		return {
+			listWidth: panelWidth - paddingX,
+			listHeight: (panelHeight - panelHeader - panelContentPaddingY - panelTitle) / 2,
+		};
+	}, [clientWindow]);
+
+	const transactionRowRenderer = React.useCallback(
+		({ index, style }: { index: number; style: React.CSSProperties }) => {
+			const transaction = transactions?.[index];
+
+			if (!transaction) return null;
+
+			const {
+				param: { inputToken, outputToken },
+				txid,
+				dateTime,
+			} = transaction;
+
+			return (
+				<div key={txid} className='flex flex-row justify-between py-4 border-b' style={style}>
+					<div className='flex flex-col justify-between h-full'>
+						<div className='flex flex-row items-center space-x-4'>
+							<TokenInfo logoURI={inputToken?.logoURI} size={20} />
+							<div className='text-xs text-black/75'>{inputToken?.name ?? ''}</div>
+						</div>
+						<div className='flex justify-center'>
+							<Icon name='exchange' size={10} />
+						</div>
+						<div className='flex flex-row items-center space-x-4'>
+							<TokenInfo logoURI={transaction?.param.outputToken?.logoURI} size={20} />
+							<div className='text-xs text-black/75'>{outputToken?.name ?? ''}</div>
+						</div>
+					</div>
+					<div className='text-sm flex flex-col justify-between items-end h-full'>
+						<Link className='underline' href={`https://solscan.io/tx/${txid}`} rel='noreferrer' passHref>
+							<a
+								target='_blank'
+								className='flex flex-row items-center border border-gray-300 hover:border-gray-500 rounded p-1'
+							>
+								<Image src='/icons/solscan.svg' width={60} height={8} alt='solscan' />
+								<Icon name='more' size={10} color='gray' />
+							</a>
+						</Link>
+						<span className='text-xs text-black/50' data-tip={dateTime.toString()} data-for='tooltip_main'>
+							{new RelativeTime().from(dateTime)}
+						</span>
+					</div>
+				</div>
+			);
+		},
+		[transactions]
+	);
+
+	const errorsRowRenderer = React.useCallback(
+		({ index, style }: { index: number; style: React.CSSProperties }) => {
+			const error = errors?.[index];
+
+			if (!error) return null;
+
+			const { dateTime, message, txid } = error;
+
+			return (
+				<div
+					key={dateTime.getTime()}
+					className='text-sm flex flex-col justify-between py-4 border-b'
+					style={style}
+				>
+					<span
+						className='break-all text-ellipsis overflow-hidden ...'
+						data-tip={message}
+						data-for='tooltip_main'
+					>{`${message}`}</span>
+					<div className='flex flex-row items-center justify-between'>
+						{txid ? (
+							<Link
+								className='underline'
+								href={`https://solscan.io/tx/${txid}`}
+								rel='noreferrer'
+								passHref
+							>
+								<a
+									target='_blank'
+									className='flex flex-row items-center border border-gray-300 hover:shadow-lg rounded p-1'
+								>
+									<Image src='/icons/solscan.svg' width={60} height={8} alt='solscan' />
+									<Icon name='more' size={10} color='gray' />
+								</a>
+							</Link>
+						) : null}
+						<span className='text-xs text-black/50' data-tip={dateTime.toString()} data-for='tooltip_main'>
+							{new RelativeTime().from(dateTime)}
+						</span>
+					</div>
+				</div>
+			);
+		},
+		[errors]
+	);
 
 	const onRunClick = React.useCallback(() => {
 		if (botStatus === 'stopping') return;
@@ -145,63 +257,19 @@ const RunPanel: React.FC = () => {
 								onClick={clearTransaction}
 							/>
 						</div>
-						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
-							{txids?.length ?? 0 > 0 ? (
-								txids?.map(({ dateTime, txid, param: { inputToken, outputToken } }) => {
-									return (
-										<div key={txid} className='flex flex-row justify-between'>
-											<div className='flex flex-col space-y-4'>
-												<div className='flex flex-row items-center space-x-4'>
-													<TokenInfo logoURI={inputToken?.logoURI} size={20} />
-													<div className='text-xs text-black/75'>
-														{inputToken?.name ?? ''}
-													</div>
-												</div>
-												<div className='flex justify-center'>
-													<Icon name='exchange' size={10} />
-												</div>
-												<div className='flex flex-row items-center space-x-4'>
-													<TokenInfo logoURI={outputToken?.logoURI} size={20} />
-													<div className='text-xs text-black/75'>
-														{outputToken?.name ?? ''}
-													</div>
-												</div>
-											</div>
-											<div className='text-sm flex flex-col justify-between h-full'>
-												<Link
-													className='underline'
-													href={`https://solscan.io/tx/${txid}`}
-													rel='noreferrer'
-													passHref
-												>
-													<a
-														target='_blank'
-														className='flex flex-row items-center border border-gray-300 hover:border-gray-500 rounded p-1'
-													>
-														<Image
-															src='/icons/solscan.svg'
-															width={60}
-															height={8}
-															alt='solscan'
-														/>
-														<Icon name='more' size={10} color='gray' />
-													</a>
-												</Link>
-												<span
-													className='text-xs text-black/50'
-													data-tip={dateTime.toString()}
-													data-for='tooltip_main'
-												>
-													{new RelativeTime().from(dateTime)}
-												</span>
-											</div>
-										</div>
-									);
-								})
-							) : (
-								<div className='text-sm text-black/50'>No record found</div>
-							)}
-						</div>
+
+						{transactions?.length ?? 0 > 0 ? (
+							<List
+								width={listWidth}
+								height={listHeight}
+								itemCount={transactions?.length ?? 0}
+								itemSize={100}
+							>
+								{transactionRowRenderer}
+							</List>
+						) : (
+							<div className='text-sm text-black/50'>No record found</div>
+						)}
 					</div>
 					<div className='flex flex-col h-1/2'>
 						<div className='flex flex-row items-center justify-between w-full'>
@@ -216,51 +284,9 @@ const RunPanel: React.FC = () => {
 							/>
 						</div>
 						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
-							{errors?.length ?? 0 > 0 ? (
-								errors?.map(({ dateTime, message, txid }) => (
-									<div key={dateTime.getTime()} className='text-sm flex flex-col'>
-										<div className='flex flex-col space-y-2'>
-											<span
-												className='break-all text-ellipsis overflow-hidden ...'
-												data-tip={message}
-												data-for='tooltip_main'
-											>{`${message}`}</span>
-											<div className='flex flex-row items-center justify-between'>
-												{txid ? (
-													<Link
-														className='underline'
-														href={`https://solscan.io/tx/${txid}`}
-														rel='noreferrer'
-														passHref
-													>
-														<a
-															target='_blank'
-															className='flex flex-row items-center border border-gray-300 hover:shadow-lg rounded p-1'
-														>
-															<Image
-																src='/icons/solscan.svg'
-																width={60}
-																height={8}
-																alt='solscan'
-															/>
-															<Icon name='more' size={10} color='gray' />
-														</a>
-													</Link>
-												) : null}
-												<span
-													className='text-xs text-black/50'
-													data-tip={dateTime.toString()}
-													data-for='tooltip_main'
-												>
-													{new RelativeTime().from(dateTime)}
-												</span>
-											</div>
-										</div>
-									</div>
-								))
-							) : (
-								<div className='text-sm text-black/50'>No record found</div>
-							)}
+							<List width={listWidth} height={listHeight} itemCount={errors?.length ?? 0} itemSize={100}>
+								{errorsRowRenderer}
+							</List>
 						</div>
 					</div>
 				</div>
