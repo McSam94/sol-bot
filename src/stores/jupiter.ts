@@ -6,8 +6,9 @@ import create from 'zustand/vanilla';
 import startCase from 'lodash.startcase';
 import { NETWORK, RPC_ENDPOINT } from '@constants/connection';
 import { ROUTES_PROPS } from '@constants/routes';
-import { convertStoreToHooks } from '@utils/store';
 import { CustomDropdownOption } from '@blockly/fields/dropdown';
+import { convertStoreToHooks } from '@utils/store';
+import { fromDecimal } from '@utils/number';
 
 export interface Token {
 	chainId: number;
@@ -204,8 +205,8 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 						param: {
 							inputToken,
 							outputToken,
-							inAmount,
-							outAmount,
+							inAmount: fromDecimal(inAmount, inputToken?.decimals ?? 0),
+							outAmount: fromDecimal(outAmount, outputToken?.decimals ?? 0),
 							slippage: slippage ?? 0,
 							routes: bestRoute.marketInfos.map(marketInfo => marketInfo.amm.label),
 						},

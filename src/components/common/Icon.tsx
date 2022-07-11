@@ -10,6 +10,7 @@ const IconSrc: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>
 	upload: dynamic(() => import('public/icons/upload.svg')),
 	exchange: dynamic(() => import('public/icons/exchange.svg')),
 	more: dynamic(() => import('public/icons/more.svg')),
+	empty: dynamic(() => import('public/icons/empty.svg')),
 };
 
 interface IconProps {

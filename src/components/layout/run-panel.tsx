@@ -16,11 +16,12 @@ import useWindow from '@hooks/useWindow';
 import { Modal } from '@components/common';
 import Button from '@components/common/button';
 import Icon from '@components/common/Icon';
+import { useInterval } from 'react-use';
 
 const RunPanel: React.FC = () => {
 	const clientWindow = useWindow();
 	const { connected, wallet } = useWallet();
-	const { transactions, errors, clearErrors, clearTransaction, tokens } = useJupStore();
+	const { transactions, errors, clearErrors, clearTransaction, setState } = useJupStore();
 	const { botStatus, invalidBlocks, missingMandatoryBlocks, extraBlocks } = useBotStore();
 	const { isWorkspaceReady, runBot, stopBot, saveWorkspace, loadWorkspace } = useBlockly();
 
@@ -84,7 +85,7 @@ const RunPanel: React.FC = () => {
 			if (!transaction) return null;
 
 			const {
-				param: { inputToken, outputToken },
+				param: { inputToken, outputToken, inAmount, outAmount },
 				txid,
 				dateTime,
 			} = transaction;
@@ -94,14 +95,18 @@ const RunPanel: React.FC = () => {
 					<div className='flex flex-col justify-between h-full'>
 						<div className='flex flex-row items-center space-x-4'>
 							<TokenInfo logoURI={inputToken?.logoURI} size={20} />
-							<div className='text-xs text-black/75'>{inputToken?.name ?? ''}</div>
+							<div className='text-xs text-black/75'>
+								{`${inAmount} ${inputToken?.symbol}` ?? 'Unknown'}
+							</div>
 						</div>
 						<div className='flex justify-center'>
 							<Icon name='exchange' size={10} />
 						</div>
 						<div className='flex flex-row items-center space-x-4'>
 							<TokenInfo logoURI={transaction?.param.outputToken?.logoURI} size={20} />
-							<div className='text-xs text-black/75'>{outputToken?.name ?? ''}</div>
+							<div className='text-xs text-black/75'>
+								{`${outAmount} ${outputToken?.symbol}` ?? 'Unknown'}
+							</div>
 						</div>
 					</div>
 					<div className='text-sm flex flex-col justify-between items-end h-full'>
@@ -114,7 +119,11 @@ const RunPanel: React.FC = () => {
 								<Icon name='more' size={10} color='gray' />
 							</a>
 						</Link>
-						<span className='text-xs text-black/50' data-tip={dateTime.toString()} data-for='tooltip_main'>
+						<span
+							className='text-xs text-black/50 cursor-pointer'
+							data-tip={dateTime.toString()}
+							data-for='tooltip_main'
+						>
 							{new RelativeTime().from(dateTime)}
 						</span>
 					</div>
@@ -160,7 +169,11 @@ const RunPanel: React.FC = () => {
 								</a>
 							</Link>
 						) : null}
-						<span className='text-xs text-black/50' data-tip={dateTime.toString()} data-for='tooltip_main'>
+						<span
+							className='text-xs text-black/50 cursor-pointer'
+							data-tip={dateTime.toString()}
+							data-for='tooltip_main'
+						>
 							{new RelativeTime().from(dateTime)}
 						</span>
 					</div>
@@ -195,6 +208,13 @@ const RunPanel: React.FC = () => {
 		runBot();
 		setIsModalOpen(false);
 	}, [runBot]);
+
+	// real time relative time
+	useInterval(
+		() => setState({ transactions: [...(transactions ?? [])] }),
+		transactions?.length ?? 0 > 0 ? 5000 : null
+	);
+	useInterval(() => setState({ errors: [...(errors ?? [])] }), errors?.length ?? 0 > 0 ? 5000 : null);
 
 	React.useEffect(() => {
 		ReactTooltip.rebuild();
@@ -268,7 +288,10 @@ const RunPanel: React.FC = () => {
 								{transactionRowRenderer}
 							</List>
 						) : (
-							<div className='text-sm text-black/50'>No record found</div>
+							<div className='flex flex-col space-y-4 items-center justify-center h-full'>
+								<Icon name='empty' size={50} color='lightgray' />
+								<div className='text-sm text-black/50'>No record found</div>
+							</div>
 						)}
 					</div>
 					<div className='flex flex-col h-1/2'>
@@ -284,9 +307,21 @@ const RunPanel: React.FC = () => {
 							/>
 						</div>
 						<div className='flex flex-col space-y-4 h-full overflow-y-auto py-2'>
-							<List width={listWidth} height={listHeight} itemCount={errors?.length ?? 0} itemSize={100}>
-								{errorsRowRenderer}
-							</List>
+							{errors?.length ?? 0 > 0 ? (
+								<List
+									width={listWidth}
+									height={listHeight}
+									itemCount={errors?.length ?? 0}
+									itemSize={100}
+								>
+									{errorsRowRenderer}
+								</List>
+							) : (
+								<div className='flex flex-col space-y-4 items-center justify-center h-full'>
+									<Icon name='empty' size={50} color='lightgray' />
+									<div className='text-sm text-black/50'>No record found</div>
+								</div>
+							)}
 						</div>
 					</div>
 				</div>
