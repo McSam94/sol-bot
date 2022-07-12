@@ -46,6 +46,10 @@ Blockly.JavaScript.exchange_condition = (block: BlockSvg) => {
 		function JupExchange() {
 			computedRoutes = computeRoutes();
 
+			if(shouldBotStop()) {
+				return;
+			}
+
 			${stack}
 		}
 	`;

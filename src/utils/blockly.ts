@@ -31,21 +31,21 @@ export const generateCode = (code: string) => {
 
 		while(shouldLoop) {
 			try {
-				if (!JupDefinition) toast('Exchange Parameter block is mandatory to be in the workspace', 'error');
-				JupDefinition();
+				if (shouldBotStop()) break;
 
-				if (JupExchange) {
-					JupExchange();
-				}
+				JupDefinition && JupDefinition();
 
-				if (JupLoop) {
-					shouldLoop = JupLoop();
-				} else {
-					shouldLoop = false;
-				}
+				if (shouldBotStop()) break;
+
+				JupExchange && JupExchange();
+
+				if (JupLoop) shouldLoop = JupLoop();
+				else shouldLoop = false;
+
 			} catch (error) {
 				console.error(error);
 				toast(error, 'error');
+
 				shouldLoop = false;
 			}
 		}
