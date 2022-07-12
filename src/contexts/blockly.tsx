@@ -2,12 +2,12 @@ import * as React from 'react';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Blockly, { WorkspaceSvg } from 'blockly';
-import { useBeforeUnload, useInterval } from 'react-use';
+import { useBeforeUnload } from 'react-use';
 import { Interpreter } from 'js-interpreter-npm';
 import { interpreterConfig } from '@utils/interpreter';
 import { fetchXml, saveAs, generateCode } from '@utils/blockly';
 import { devLog } from '@utils/dev';
-import TokenStore, { useTokenStore } from '@stores/token';
+import { useTokenStore } from '@stores/token';
 import { useJupStore } from '@stores/jupiter';
 import { useBotStore } from '@stores/bot';
 
@@ -157,12 +157,6 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 		},
 		[loadFile]
 	);
-
-	useInterval(() => {
-		if (!publicKey) return;
-
-		TokenStore.getState().getUserBalances(publicKey);
-	}, 10000);
 
 	useBeforeUnload(() => botStatus !== 'idle', 'Your bot is running, are you sure you wanna quit?');
 
