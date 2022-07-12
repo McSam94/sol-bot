@@ -1,11 +1,12 @@
 import Interpreter from 'js-interpreter-npm';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
+import { RouteInfo } from '@jup-ag/core';
+import toast from 'react-hot-toast';
 import { RouteProp } from '@constants/routes';
 import TokenStore from '@stores/token';
 import JupStore from '@stores/jupiter';
 import BotStore from '@stores/bot';
 import { fromDecimal } from '@utils/number';
-import toast from 'react-hot-toast';
 
 export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any) {
 	jsInterpreter.setProperty(scope, 'console', jsInterpreter.nativeToPseudo(console));
@@ -63,15 +64,27 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 			} = JupStore.getState();
 
 			toast.promise(
-				getComputedRoutes()
-					.then(routesInfos => {
-						callback(jsInterpreter.nativeToPseudo(routesInfos?.splice(0, 10)));
-					})
-					.catch(() => callback([])),
+				new Promise<RouteInfo>((resolve, reject) =>
+					getComputedRoutes()
+						.then(routesInfos => {
+							callback(jsInterpreter.nativeToPseudo(routesInfos?.splice(0, 10) ?? []));
+							const bestRoutes = routesInfos?.[0];
+							bestRoutes ? resolve(bestRoutes) : reject();
+						})
+						.catch(() => {
+							callback([]);
+							reject();
+						})
+				),
 				{
 					loading: `Finding the best routes for \n ${amount} ${inputToken?.symbol} → ${outputToken?.symbol}`,
-					success: 'Best routes found',
-					error: null,
+					success: (data: RouteInfo) =>
+						`Best routes has found \t\t  \n ${data.marketInfos
+							.map(marketInfo => marketInfo.amm.label)
+							.join(' → ')} \n ${`${fromDecimal(data.outAmount, outputToken?.decimals ?? 0)} ${
+							outputToken?.symbol ?? ''
+						}`}`,
+					error: 'Something went wrong when finding routes',
 				}
 			);
 		})
