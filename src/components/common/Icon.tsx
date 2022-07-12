@@ -11,6 +11,7 @@ const IconSrc = {
 	exchange: dynamic(() => import('public/icons/exchange.svg')),
 	more: dynamic(() => import('public/icons/more.svg')),
 	empty: dynamic(() => import('public/icons/empty.svg')),
+	discord: dynamic(() => import('public/icons/discord.svg')),
 };
 
 interface IconProps {
