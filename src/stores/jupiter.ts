@@ -130,7 +130,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 			.map(([key, value]) => ({ label: key, value }))
 			.filter(Boolean),
 	getComputedRoutes: async () => {
-		const { blocklyState, tokens, jupiter, computedRoutesLastFetch, cacheSecond, computedRoutes } = get();
+		const { blocklyState, jupiter, computedRoutesLastFetch, cacheSecond, computedRoutes } = get();
 
 		const now = new Date().getTime();
 		const previouslyFetchTimestamp = computedRoutesLastFetch?.getTime() ?? new Date().getTime();
@@ -156,7 +156,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 
 		// JsInterpreter can't convert RouteInfo properly so passed through zustand
 		set({ computedRoutes: newComputedRoutes ?? null, computedRoutesLastFetch: new Date() });
-		return computedRoutes;
+		return newComputedRoutes;
 	},
 	setWallet: (wallet: SignerWalletAdapter) => {
 		const { jupiter } = get();

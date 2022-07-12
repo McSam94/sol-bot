@@ -72,6 +72,7 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 							bestRoutes ? resolve(bestRoutes) : reject();
 						})
 						.catch(() => {
+							console.log('error');
 							callback([]);
 							reject();
 						})
