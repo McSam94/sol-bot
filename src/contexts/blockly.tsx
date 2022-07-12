@@ -4,6 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import Blockly, { WorkspaceSvg } from 'blockly';
 import { useBeforeUnload } from 'react-use';
 import { Interpreter } from 'js-interpreter-npm';
+import { MANDATORY_BLOCKS, UNIQUE_BLOCKS } from '@constants/blockly';
 import { interpreterConfig } from '@utils/interpreter';
 import { fetchXml, saveAs, generateCode } from '@utils/blockly';
 import { devLog } from '@utils/dev';
@@ -15,7 +16,6 @@ import '@blockly/blocks';
 import '@blockly/fields';
 import '@blockly/extensions';
 import '@blockly/styles';
-import { MANDATORY_BLOCKS, UNIQUE_BLOCKS } from '@constants/blockly';
 
 interface BlocklyContextProps {
 	workspace: Blockly.WorkspaceSvg | undefined;
