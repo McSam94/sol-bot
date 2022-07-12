@@ -6,8 +6,16 @@ Blockly.Blocks.console = {
 	},
 	definition() {
 		return {
-			message0: 'console %1',
+			message0: 'show time %1',
+			message1: 'console %1',
 			args0: [
+				{
+					type: 'field_checkbox',
+					name: 'CONSOLE_TIME',
+					checked: true,
+				},
+			],
+			args1: [
 				{
 					type: 'input_value',
 					name: 'TEXT',
@@ -23,6 +31,7 @@ Blockly.Blocks.console = {
 
 Blockly.JavaScript.console = (block: BlockSvg) => {
 	const msg = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "''";
+	const shouldShowTime = block.getFieldValue('CONSOLE_TIME') === 'TRUE';
 
-	return `console.log(${msg});\n`;
+	return `console.log(${`${shouldShowTime ? `new Date().toLocaleString(), '→',` : ''}`}${msg});\n`;
 };
