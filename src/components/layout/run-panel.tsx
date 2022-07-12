@@ -108,7 +108,7 @@ const RunPanel: React.FC = () => {
 						<Link className='underline' href={`https://solscan.io/tx/${txid}`} rel='noreferrer' passHref>
 							<a
 								target='_blank'
-								className='flex flex-row items-center border border-gray-300 hover:border-gray-500 rounded p-1'
+								className='flex flex-row items-center border border-gray-300 hover:shadow-lg rounded p-1'
 							>
 								<Image src='/icons/solscan.svg' width={60} height={8} alt='solscan' />
 								<Icon name='more' size={10} color='gray' />
