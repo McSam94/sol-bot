@@ -208,6 +208,26 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 		() => setWorkspace(undefined);
 	}, [renderWorkspace]);
 
+	React.useEffect(() => {
+		if (!document && workspace) return;
+
+		const toolboxEl = document.getElementsByClassName('blocklyToolboxDiv')[0];
+		if (!toolboxEl) return;
+
+		const imgContainer = document.createElement('div');
+		imgContainer.classList.add('flex');
+		imgContainer.classList.add('flex-1');
+		imgContainer.classList.add('items-end');
+		imgContainer.classList.add('px-2');
+		const blocklyImg = document.createElement('img');
+		blocklyImg.src = '/credit/blockly.svg';
+		blocklyImg.width = 100;
+		imgContainer.appendChild(blocklyImg);
+		toolboxEl.classList.add('!flex');
+		toolboxEl.classList.add('flex-col');
+		toolboxEl.appendChild(imgContainer);
+	}, [workspace]);
+
 	return (
 		<BlocklyContext.Provider value={{ workspace, isWorkspaceReady, runBot, stopBot, saveWorkspace, loadWorkspace }}>
 			{children}

@@ -14,10 +14,6 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
 					<RunPanel />
 				</div>
 			</div>
-
-			<div className='flex absolute bottom-2 left-2 z-100'>
-				<Image src='/credit/blockly.svg' alt='blockly' width={100} height={50} />
-			</div>
 		</div>
 	);
 };

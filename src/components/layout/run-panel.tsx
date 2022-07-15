@@ -211,7 +211,7 @@ const RunPanel: React.FC = () => {
 	return (
 		<>
 			<div className='flex flex-col w-full h-full bg-gray-100'>
-				<div className='flex flex-col h-60 justify-center border-b'>
+				<div className='flex flex-col h-44 justify-center border-b'>
 					<div className='text-md font-bold text-center mb-2'>{`Status: ${startCase(botStatus)}`}</div>
 					<div className='flex flex-row space-x-4 items-center justify-center'>
 						<Button
