@@ -155,7 +155,6 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 					forceFetch: true,
 				})
 			)?.routesInfos ?? null;
-		console.log('🚀 ~ file: jupiter.ts ~ line 149 ~ getComputedRoutes: ~ newComputedRoutes', newComputedRoutes);
 
 		// JsInterpreter can't convert RouteInfo properly so passed through zustand
 		set({ computedRoutes: newComputedRoutes ?? null, computedRoutesLastFetch: new Date() });
