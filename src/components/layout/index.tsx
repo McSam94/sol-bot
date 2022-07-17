@@ -5,7 +5,7 @@ import RunPanel from './run-panel';
 
 const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
 	return (
-		<div className='flex flex-col max-w-full min-h-screen relative'>
+		<div className='flex flex-col max-w-full h-screen relative overflow-hidden'>
 			<Header />
 			<div className='flex flex-row' style={{ height: 'calc(100vh - 80px)' }}>
 				<div className='flex lg:hidden justify-center items-center w-full font-semibold text-md'>{`Sorry, mobile currently not support yet :(`}</div>
