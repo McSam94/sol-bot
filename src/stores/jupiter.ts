@@ -52,7 +52,6 @@ interface JupStoreInt {
 	jupiter: Jupiter | null;
 	routeMap: Map<string, string[]> | null;
 	computedRoutes: Array<RouteInfo> | null;
-	computedRoutesLastFetch: Date | null;
 	cacheSecond: number;
 	tokens: Array<Token> | null;
 	blocklyState: BlocklyState;
@@ -85,7 +84,6 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 	wallet: null,
 	routeMap: null,
 	computedRoutes: null,
-	computedRoutesLastFetch: null,
 	cacheSecond: 0,
 	tokens: null,
 	transactions: null,
@@ -130,13 +128,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 			.map(([key, value]) => ({ label: key, value }))
 			.filter(Boolean),
 	getComputedRoutes: async () => {
-		const { blocklyState, jupiter, computedRoutesLastFetch, cacheSecond, computedRoutes } = get();
-
-		const now = new Date().getTime();
-		const previouslyFetchTimestamp = computedRoutesLastFetch?.getTime() ?? new Date().getTime();
-		if (computedRoutesLastFetch && (now - previouslyFetchTimestamp) / 1000 < cacheSecond) {
-			return computedRoutes;
-		}
+		const { blocklyState, jupiter } = get();
 
 		const { inputToken, outputToken, amount, slippage } = blocklyState;
 
@@ -157,7 +149,7 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 			)?.routesInfos ?? null;
 
 		// JsInterpreter can't convert RouteInfo properly so passed through zustand
-		set({ computedRoutes: newComputedRoutes ?? null, computedRoutesLastFetch: new Date() });
+		set({ computedRoutes: newComputedRoutes });
 		return newComputedRoutes;
 	},
 	setWallet: (wallet: SignerWalletAdapter) => {

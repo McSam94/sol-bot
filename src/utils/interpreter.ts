@@ -68,12 +68,11 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 				new Promise<RouteInfo>((resolve, reject) =>
 					getComputedRoutes()
 						.then(routesInfos => {
-							callback(jsInterpreter.nativeToPseudo(routesInfos?.splice(0, 10) ?? []));
+							callback();
 							const bestRoutes = routesInfos?.[0];
 							bestRoutes ? resolve(bestRoutes) : reject();
 						})
 						.catch(() => {
-							console.log('error');
 							callback([]);
 							reject();
 						})
