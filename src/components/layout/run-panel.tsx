@@ -17,6 +17,8 @@ import { Modal } from '@components/common';
 import Button from '@components/common/button';
 import Icon from '@components/common/Icon';
 
+const PANEL_HEADER = 176;
+
 const RunPanel: React.FC = () => {
 	const clientWindow = useWindow();
 	const { connected, wallet } = useWallet();
@@ -63,13 +65,12 @@ const RunPanel: React.FC = () => {
 
 		const headerHeight = 80;
 		const panelHeight = (clientWindow?.innerHeight ?? 0) - headerHeight;
-		const panelHeader = 240;
 		const panelContentPaddingY = 8 * 2;
 		const panelTitle = 28 * 2;
 
 		return {
 			listWidth: panelWidth - paddingX,
-			listHeight: (panelHeight - panelHeader - panelContentPaddingY - panelTitle) / 2,
+			listHeight: (panelHeight - PANEL_HEADER - panelContentPaddingY - panelTitle) / 2,
 		};
 	}, [clientWindow]);
 
@@ -256,7 +257,7 @@ const RunPanel: React.FC = () => {
 						</Button>
 					</div>
 				</div>
-				<div className='flex flex-col px-4 py-2' style={{ height: 'calc(100% - 176px)' }}>
+				<div className='flex flex-col px-4 py-2' style={{ height: `calc(100% - ${PANEL_HEADER}px)` }}>
 					<div className='flex flex-col h-1/2 border-b'>
 						<div className='flex flex-row items-center w-full justify-between'>
 							<div className='text-lg font-bold'>Transactions</div>
