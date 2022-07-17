@@ -256,7 +256,7 @@ const RunPanel: React.FC = () => {
 						</Button>
 					</div>
 				</div>
-				<div className='flex flex-col px-4 py-2' style={{ height: 'calc(100% - 240px)' }}>
+				<div className='flex flex-col px-4 py-2' style={{ height: 'calc(100% - 176px)' }}>
 					<div className='flex flex-col h-1/2 border-b'>
 						<div className='flex flex-row items-center w-full justify-between'>
 							<div className='text-lg font-bold'>Transactions</div>
