@@ -1,4 +1,4 @@
-import * as React from 'react';
+import JSBI from 'jsbi';
 import { Cluster, Connection, PublicKey } from '@solana/web3.js';
 import { Jupiter, RouteInfo, SwapResult, TOKEN_LIST_URL } from '@jup-ag/core';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
@@ -7,7 +7,7 @@ import { NETWORK, RPC_ENDPOINT } from '@constants/connection';
 import { ROUTES_PROPS } from '@constants/routes';
 import { CustomDropdownOption } from '@blockly/fields/dropdown';
 import { convertStoreToHooks } from '@utils/store';
-import { fromDecimal } from '@utils/number';
+import { fromDecimal, toDecimal } from '@utils/number';
 
 export interface Token {
 	chainId: number;
@@ -144,15 +144,18 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		const slippageNum = +(slippage ?? 0);
 		if (!inputToken || !outputToken || !amountNum || !slippageNum) return null;
 
+		const inputAmountLamport = toDecimal(amountNum, inputToken.decimals);
 		const newComputedRoutes: Array<RouteInfo> | null =
 			(
 				await jupiter?.computeRoutes({
 					inputMint: new PublicKey(inputToken.address),
 					outputMint: new PublicKey(outputToken.address),
-					inputAmount: amountNum * 10 ** inputToken.decimals,
+					amount: JSBI.BigInt(inputAmountLamport),
 					slippage: slippageNum,
+					forceFetch: true,
 				})
 			)?.routesInfos ?? null;
+		console.log('🚀 ~ file: jupiter.ts ~ line 149 ~ getComputedRoutes: ~ newComputedRoutes', newComputedRoutes);
 
 		// JsInterpreter can't convert RouteInfo properly so passed through zustand
 		set({ computedRoutes: newComputedRoutes ?? null, computedRoutesLastFetch: new Date() });
@@ -204,8 +207,8 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 						param: {
 							inputToken,
 							outputToken,
-							inAmount: fromDecimal(inAmount, inputToken?.decimals ?? 0),
-							outAmount: fromDecimal(outAmount, outputToken?.decimals ?? 0),
+							inAmount: fromDecimal(JSBI.toNumber(inAmount), inputToken?.decimals ?? 0),
+							outAmount: fromDecimal(JSBI.toNumber(outAmount), outputToken?.decimals ?? 0),
 							slippage: slippage ?? 0,
 							routes: bestRoute.marketInfos.map(marketInfo => marketInfo.amm.label),
 						},

@@ -7,6 +7,7 @@ import TokenStore from '@stores/token';
 import JupStore from '@stores/jupiter';
 import BotStore from '@stores/bot';
 import { fromDecimal } from '@utils/number';
+import JSBI from 'jsbi';
 
 export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any) {
 	jsInterpreter.setProperty(scope, 'console', jsInterpreter.nativeToPseudo(console));
@@ -82,9 +83,10 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 					success: (data: RouteInfo) =>
 						`Best routes has found \t\t  \n ${data.marketInfos
 							.map(marketInfo => marketInfo.amm.label)
-							.join(' → ')} \n ${`${fromDecimal(data.outAmount, outputToken?.decimals ?? 0)} ${
-							outputToken?.symbol ?? ''
-						}`}`,
+							.join(' → ')} \n ${`${fromDecimal(
+							JSBI.toNumber(data.outAmount),
+							outputToken?.decimals ?? 0
+						)} ${outputToken?.symbol ?? ''}`}`,
 					error: 'Something went wrong when finding routes',
 				}
 			);
@@ -101,19 +103,23 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 			if (!computedRoutes) return;
 
 			const bestRoute = computedRoutes[0];
-			const { inAmount, outAmount, outAmountWithSlippage } = bestRoute;
+			const { inAmount, outAmount, otherAmountThreshold } = bestRoute;
 
 			const bestRouteReceiveToken = tokens?.find(token => token.address === blocklyState.outputToken?.address);
 			if (!bestRouteReceiveToken) return;
 
+			const inAmountNum = JSBI.toNumber(inAmount);
+			const outAmountNum = JSBI.toNumber(outAmount);
+			const otherAmountThresholdNum = JSBI.toNumber(otherAmountThreshold);
+
 			const bestRouteProp = {
 				...bestRoute,
-				inAmountLamport: inAmount,
-				outAmountLamport: outAmount,
-				outAmountWithSlippageLamport: outAmountWithSlippage,
-				inAmount: fromDecimal(inAmount, bestRouteReceiveToken.decimals),
-				outAmount: fromDecimal(outAmount, bestRouteReceiveToken.decimals),
-				outAmountWithSlippage: fromDecimal(outAmountWithSlippage, bestRouteReceiveToken.decimals),
+				inAmountLamport: inAmountNum,
+				outAmountLamport: outAmountNum,
+				otherAmountThresholdLamport: otherAmountThresholdNum,
+				inAmount: fromDecimal(inAmountNum, bestRouteReceiveToken.decimals),
+				outAmount: fromDecimal(outAmountNum, bestRouteReceiveToken.decimals),
+				otherAmountThreshold: fromDecimal(otherAmountThresholdNum, bestRouteReceiveToken.decimals),
 			};
 
 			const propValue = bestRouteProp[routeProp];
@@ -130,7 +136,10 @@ export function interpreterConfig(jsInterpreter: typeof Interpreter, scope: any)
 
 			const bestRoutes = computedRoutes?.[0];
 			const { amount, inputToken, outputToken } = blocklyState;
-			const outAmount = fromDecimal(bestRoutes?.outAmount ?? 0, outputToken?.decimals ?? 0);
+			const outAmount = fromDecimal(
+				JSBI.toNumber(bestRoutes?.outAmount ?? JSBI.BigInt(0)),
+				outputToken?.decimals ?? 0
+			);
 			toast.promise(
 				exchange(wallet).finally(() => callback()),
 				{

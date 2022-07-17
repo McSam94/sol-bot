@@ -5,17 +5,12 @@
         <field name="PAY_TOKEN_LIST">EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v</field>
         <field name="RECEIVE_TOKEN_LIST">So11111111111111111111111111111111111111112</field>
         <next>
-          <block type="computed_routes_cache" id="m(OIhz)n]7y/U8N}(9F[">
-            <field name="ROUTES_CACHE_TIME">0</field>
-            <next>
-              <block type="exchange_slippage" id="HLB6VZj1ZHOP{0ka=C(`">
-                <value name="SLIPPAGE">
-                  <shadow type="math_number" id="VDx6`hjk|[NwIC*a+PCV">
-                    <field name="NUM">0.1</field>
-                  </shadow>
-                </value>
-              </block>
-            </next>
+          <block type="exchange_slippage" id="HLB6VZj1ZHOP{0ka=C(`">
+            <value name="SLIPPAGE">
+              <shadow type="math_number" id="VDx6`hjk|[NwIC*a+PCV">
+                <field name="NUM">0.1</field>
+              </shadow>
+            </value>
           </block>
         </next>
       </block>
