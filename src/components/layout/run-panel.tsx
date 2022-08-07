@@ -22,9 +22,9 @@ const PANEL_HEADER = 176;
 const RunPanel: React.FC = () => {
 	const clientWindow = useWindow();
 	const { connected, wallet } = useWallet();
-	const { transactions, errors, clearErrors, clearTransaction, setState } = useJupStore();
-	const { botStatus, invalidBlocks, missingMandatoryBlocks, extraBlocks } = useBotStore();
-	const { isWorkspaceReady, runBot, stopBot, saveWorkspace, loadWorkspace } = useBlockly();
+	const { transactions, errors, clearErrors, clearTransaction } = useJupStore();
+	const { botStatus, invalidBlocks, missingMandatoryBlocks, extraBlocks, removeInvalidBlock } = useBotStore();
+	const { isWorkspaceReady, runBot, stopBot, saveWorkspace, loadWorkspace, workspace } = useBlockly();
 
 	const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
 
@@ -208,6 +208,17 @@ const RunPanel: React.FC = () => {
 	React.useEffect(() => {
 		ReactTooltip.rebuild();
 	});
+
+	React.useEffect(() => {
+		if (!workspace) return;
+
+		const workspaceBlocks = workspace.getAllBlocks(false);
+		invalidBlocks.forEach(invalidBlock => {
+			if (!workspaceBlocks.some(block => block.id === invalidBlock)) {
+				removeInvalidBlock(invalidBlock);
+			}
+		});
+	}, [invalidBlocks, removeInvalidBlock, workspace]);
 
 	return (
 		<>

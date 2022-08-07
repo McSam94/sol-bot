@@ -8,7 +8,7 @@ const Header = () => {
 	return (
 		<div className='flex flex-row items-center bg-black w-full px-10 h-20 shadow-md text-white'>
 			<div className='flex basis-1/3'>
-				<Link href='https://discord.gg/Wz67bsyF' passHref>
+				<Link href='https://discord.gg/eSuTAU6WTu' passHref>
 					<a target='_blank'>
 						<Icon name='discord' size={25} colorFn={({ hover }) => (hover ? '#7289da' : 'white')} />
 					</a>

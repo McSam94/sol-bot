@@ -113,7 +113,7 @@ const updateBlockStatus = (block: BlockSvg, warningMsg: string | null = null) =>
  * @returns A function that takes in a block, a parentType, and a warningMsg.
  */
 export const validateBlockInParent = (block: BlockSvg, parentType: string, warningMsg: string) => {
-	if (block.isInFlyout || !block.rendered) return;
+	if (block.isInFlyout || !block.rendered || block.getRootBlock().type === block.type) return;
 
 	if (block.getRootBlock().type === parentType) {
 		updateBlockStatus(block);

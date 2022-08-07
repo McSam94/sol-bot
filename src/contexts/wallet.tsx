@@ -4,11 +4,11 @@ import {
 	CoinbaseWalletAdapter,
 	GlowWalletAdapter,
 	PhantomWalletAdapter,
-	SlopeWalletAdapter,
 	SolflareWalletAdapter,
 	TorusWalletAdapter,
+	SolletExtensionWalletAdapter,
+	SolletWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { createDefaultAuthorizationResultCache, SolanaMobileWalletAdapter } from '@solana-mobile/wallet-adapter-mobile';
 import { NETWORK } from '@constants/connection';
@@ -25,8 +25,9 @@ const SolanaProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 			new CoinbaseWalletAdapter(),
 			new PhantomWalletAdapter(),
 			new GlowWalletAdapter(),
-			new SlopeWalletAdapter(),
-			new SolflareWalletAdapter({ network: NETWORK as WalletAdapterNetwork }),
+			new SolletWalletAdapter({ network: NETWORK }),
+			new SolletExtensionWalletAdapter({ network: NETWORK }),
+			new SolflareWalletAdapter({ network: NETWORK }),
 			new TorusWalletAdapter(),
 		],
 		[]
