@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import Blockly, { WorkspaceSvg } from 'blockly';
 import { useBeforeUnload } from 'react-use';
 import { Interpreter } from 'js-interpreter-npm';
-import { MANDATORY_BLOCKS, UNIQUE_BLOCKS } from '@constants/blockly';
+import { LOCAL_STORAGE, MANDATORY_BLOCKS, UNIQUE_BLOCKS } from '@constants/blockly';
 import { interpreterConfig } from '@utils/interpreter';
 import { fetchXml, saveAs, generateCode } from '@utils/blockly';
 import { devLog } from '@utils/dev';
@@ -72,7 +72,8 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 			await initializeStore();
 
 			const toolboxXml = await fetchXml('/xml/toolbox.xml');
-			const defaultXml = (await fetchXml('/xml/default.xml')) as string;
+			const defaultXml =
+				localStorage.getItem(LOCAL_STORAGE.SAVED_WORKSPACE) ?? ((await fetchXml('/xml/default.xml')) as string);
 			setWorkspace(prevState => {
 				if (prevState) return prevState;
 				// @ts-ignored
@@ -170,6 +171,11 @@ const BlocklyProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 	React.useEffect(() => {
 		workspace?.addChangeListener((event: Blockly.Events.BlockBase) => {
+			// auto save workspace to local storage
+			const workspaceDOM = Blockly.Xml.workspaceToDom(workspace);
+			const workspaceXML = Blockly.Xml.domToPrettyText(workspaceDOM);
+			localStorage.setItem(LOCAL_STORAGE.SAVED_WORKSPACE, workspaceXML);
+
 			// Check if invalidate block is removed
 			if (event instanceof Blockly.Events.BlockDelete) {
 				event.ids?.forEach(id => removeInvalidBlock(id));
