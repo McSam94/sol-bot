@@ -10,7 +10,7 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>Jupiter Bot</title>
+				<title>Sol Bot</title>
 				<meta name='description' content='Automate solana exchange without programming.' />
 			</Head>
 			<div id='blocklyDiv' className='h-full w-full'>

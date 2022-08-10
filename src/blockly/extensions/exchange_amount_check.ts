@@ -1,4 +1,3 @@
-import BotStore from '@stores/bot';
 import { validateBlockHasChildren } from '@utils/blockly';
 import Blockly, { BlockSvg } from 'blockly';
 

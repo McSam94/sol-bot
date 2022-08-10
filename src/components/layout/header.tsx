@@ -16,7 +16,7 @@ const Header = () => {
 			</div>
 			<div className='flex flex-row items-center justify-center space-x-2 basis-1/3 relative'>
 				<Image src='/logo.svg' alt='logo' width={30} height={30} />
-				<div className='text-xl font-bold hidden lg:block'>Jupiter Bot</div>
+				<div className='text-xl font-bold hidden lg:block'>Sol Bot</div>
 			</div>
 			<div className='flex justify-end basis-1/3'>
 				<Wallet />
