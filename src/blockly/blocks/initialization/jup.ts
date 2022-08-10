@@ -1,7 +1,8 @@
 import Blockly from 'blockly';
 import JupStore from '@stores/jupiter';
+import { Jupiter } from '../images';
 
-Blockly.Blocks.exchange_parameter = {
+Blockly.Blocks.jup = {
 	init() {
 		this.jsonInit(this.definition());
 
@@ -20,8 +21,22 @@ Blockly.Blocks.exchange_parameter = {
 	definition() {
 		const _this = this;
 		return {
-			message0: 'You pay: %1, You receive: %2',
+			message0: '%1 %2',
+			message1: 'You pay: %1, You receive: %2',
 			args0: [
+				{
+					type: 'field_image',
+					src: Jupiter,
+					width: 25,
+					height: 25,
+					alt: 'Exchange',
+				},
+				{
+					type: 'field_label',
+					text: 'Jupiter Parameter',
+				},
+			],
+			args1: [
 				{
 					type: 'custom_dropdown',
 					name: 'PAY_TOKEN_LIST',
@@ -38,9 +53,9 @@ Blockly.Blocks.exchange_parameter = {
 			colour: '#4E6882',
 			previousStatement: null,
 			nextStatement: null,
-			extensions: ['exchange_definition_check'],
+			extensions: ['is-in-initialization'],
 		};
 	},
 };
 
-Blockly.JavaScript.exchange_parameter = () => '';
+Blockly.JavaScript.jup = () => '';

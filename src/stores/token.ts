@@ -3,16 +3,12 @@ import { Connection, PublicKey, TokenAmount } from '@solana/web3.js';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import create from 'zustand/vanilla';
-import { CoinGeckoClient, CoinListResponseItem } from 'coingecko-api-v3';
 import { WRAPPED_SOL } from '@constants/coin';
 import { fromDecimal } from '@utils/number';
 import { convertStoreToHooks } from '@utils/store';
 import { CustomDropdownOption } from '@blockly/fields/dropdown';
-
-const coinGeckoClient = new CoinGeckoClient({
-	timeout: 10000,
-	autoRetry: true,
-});
+import { coinGeckoClient, getCoinPrizeAndCurrency } from '@utils/coinGecko';
+import { CoinListResponseItem } from 'coingecko-api-v3';
 
 interface TokenAccountInfo {
 	pubkey: PublicKey;
@@ -47,8 +43,7 @@ const TokenStore = create<TokenStoreInt>((set, get) => ({
 	coins: null,
 	currencies: null,
 	init: async () => {
-		const coins = await coinGeckoClient.coinList({ include_platform: false });
-		const currencies = await coinGeckoClient.simpleSupportedCurrencies();
+		const [coins, currencies] = await getCoinPrizeAndCurrency();
 
 		set({ coins, currencies });
 	},

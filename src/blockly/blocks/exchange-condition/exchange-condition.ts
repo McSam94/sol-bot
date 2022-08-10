@@ -1,5 +1,5 @@
 import Blockly, { BlockSvg } from 'blockly';
-import { ExchangeCondition } from '../images';
+import { TradeCondition } from '../images';
 
 Blockly.Blocks.exchange_condition = {
 	init() {
@@ -12,7 +12,7 @@ Blockly.Blocks.exchange_condition = {
 			args0: [
 				{
 					type: 'field_image',
-					src: ExchangeCondition,
+					src: TradeCondition,
 					width: 25,
 					height: 25,
 					alt: 'Exchange',

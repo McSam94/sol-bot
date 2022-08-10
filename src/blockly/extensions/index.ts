@@ -1,7 +1,7 @@
 // Check is inside parent
-import './exchange_definition_check';
-import './exchange_condition_check';
-import './loop_condition_check';
+import './is-in-intialization';
+import './is-in-trade-condition';
+import './is-in-loop-condition';
 
 // Check has children
-import './exchange_amount_check';
+import './has-amount-block';

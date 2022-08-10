@@ -1,8 +1,11 @@
 import Blockly from 'blockly';
 
-Blockly.Blocks.exchange_slippage = {
+Blockly.Blocks.slippage = {
 	init() {
 		this.jsonInit(this.definition());
+
+		this.setMovable(false);
+		this.setDeletable(false);
 	},
 	definition() {
 		return {
@@ -16,9 +19,9 @@ Blockly.Blocks.exchange_slippage = {
 			],
 			colour: '#4E6882',
 			previousStatement: null,
-			extensions: ['exchange_definition_check'],
+			extensions: ['is-in-initialization'],
 		};
 	},
 };
 
-Blockly.JavaScript.exchange_slippage = () => '';
+Blockly.JavaScript.slippage = () => '';

@@ -1,5 +1,5 @@
 // Blocks
-import './exchange-definition';
+import './initialization';
 import './exchange-condition';
 import './exchange-again';
 import './routes';

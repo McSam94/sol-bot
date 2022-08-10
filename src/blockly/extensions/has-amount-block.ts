@@ -1,8 +1,8 @@
 import { validateBlockHasChildren } from '@utils/blockly';
 import Blockly, { BlockSvg } from 'blockly';
 
-Blockly.Extensions.unregister('exchange_amount_check');
-Blockly.Extensions.register('exchange_amount_check', function (this: BlockSvg) {
+Blockly.Extensions.unregister('has-amount-block');
+Blockly.Extensions.register('has-amount-block', function (this: BlockSvg) {
 	const _this = this;
 	this.setOnChange(function (event: Blockly.Events.Abstract) {
 		if (event instanceof Blockly.Events.BlockMove) return;

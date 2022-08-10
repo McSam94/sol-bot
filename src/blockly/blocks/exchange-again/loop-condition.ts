@@ -1,5 +1,5 @@
 import Blockly, { BlockSvg } from 'blockly';
-import { ExchangeAgain } from '../images';
+import { LoopCondition } from '../images';
 
 Blockly.Blocks.loop_condition = {
 	init() {
@@ -12,7 +12,7 @@ Blockly.Blocks.loop_condition = {
 			args0: [
 				{
 					type: 'field_image',
-					src: ExchangeAgain,
+					src: LoopCondition,
 					width: 25,
 					height: 25,
 					alt: 'exchange',

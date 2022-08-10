@@ -1,7 +1,7 @@
 import Blockly, { BlockSvg } from 'blockly';
 import { getInputValue } from '@utils/blockly';
 
-Blockly.Blocks.exchange_amount = {
+Blockly.Blocks.amount = {
 	init() {
 		this.jsonInit(this.definition());
 	},
@@ -17,12 +17,12 @@ Blockly.Blocks.exchange_amount = {
 			],
 			colour: '#4E6882',
 			previousStatement: null,
-			extensions: ['exchange_definition_check'],
+			extensions: ['is-in-initialization'],
 		};
 	},
 };
 
-Blockly.JavaScript.exchange_amount = (block: BlockSvg) => {
+Blockly.JavaScript.amount = (block: BlockSvg) => {
 	const value = getInputValue(block, 'EXCHANGE_AMOUNT');
 
 	return `

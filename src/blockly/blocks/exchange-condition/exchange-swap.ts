@@ -10,7 +10,7 @@ Blockly.Blocks.exchange_swap = {
 			previousStatement: null,
 			nextStatement: null,
 			colour: '#4E6882',
-			extensions: ['exchange_condition_check'],
+			extensions: ['is-in-trade-condition'],
 		};
 	},
 };

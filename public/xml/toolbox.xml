@@ -1,17 +1,24 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
 	<category name="Exchange Definition" colour="#020029">
-		<block type="exchange_definition">
-			<statement name="EXCHANGE_PARAMETER">
-				<block type="exchange_parameter">
-					<field name="PAY_TOKEN_LIST"></field>
-					<field name="RECEIVE_TOKEN_LIST"></field>
+		<block type="initialization">
+			<mutation trading-protocol=""></mutation>
+			<statement name="INITIALIZATION_PARAMETER">
+				<block type="jup">
 					<next>
-						<block type="exchange_slippage">
-							<value name="SLIPPAGE">
-								<shadow type="math_number">
-									<field name="NUM">1</field>
-								</shadow>
-							</value>
+						<block type="serum">
+							<next>
+								<block type="orca">
+									<next>
+										<block type="slippage">
+											<value name="SLIPPAGE">
+												<shadow type="math_number">
+													<field name="NUM">1</field>
+												</shadow>
+											</value>
+										</block>
+									</next>
+								</block>
+							</next>
 						</block>
 					</next>
 				</block>
@@ -19,7 +26,7 @@
 		</block>
 		<!-- <block type="exchange_parameter"></block>
 		<block type="exchange_slippage"></block> -->
-		<block type="exchange_amount">
+		<block type="amount">
 			<value name="EXCHANGE_AMOUNT">
 				<shadow type="math_number">
 					<field name="NUM">10</field>

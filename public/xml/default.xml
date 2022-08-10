@@ -1,30 +1,4 @@
 <xml xmlns="https://developers.google.com/blockly/xml">
-  <block type="exchange_definition" id="hmrxLM9mtmZC|!+=_qOV" x="116" y="55">
-    <statement name="EXCHANGE_PARAMETER">
-      <block type="exchange_parameter" id="OJU$0iJG.AfkjZh]TwrC" deletable="false" movable="false">
-        <field name="PAY_TOKEN_LIST">EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v</field>
-        <field name="RECEIVE_TOKEN_LIST">So11111111111111111111111111111111111111112</field>
-        <next>
-          <block type="exchange_slippage" id="HLB6VZj1ZHOP{0ka=C(`">
-            <value name="SLIPPAGE">
-              <shadow type="math_number" id="VDx6`hjk|[NwIC*a+PCV">
-                <field name="NUM">0.1</field>
-              </shadow>
-            </value>
-          </block>
-        </next>
-      </block>
-    </statement>
-    <statement name="EXCHANGE_AMOUNT">
-      <block type="exchange_amount" id="-sHQa}BOGpupgzZjjsJ~">
-        <value name="EXCHANGE_AMOUNT">
-          <shadow type="math_number" id="m15,y~5F?^QRz^cJAM.x">
-            <field name="NUM">1</field>
-          </shadow>
-        </value>
-      </block>
-    </statement>
-  </block>
   <block type="exchange_condition" id="C~,{b]_n/3JCwPis-@U4" x="119" y="342">
     <statement name="EXCHANGE_CONDITION">
       <block type="exchange_swap" id="k|w7i}=DcDWq1:+fXda~"></block>
