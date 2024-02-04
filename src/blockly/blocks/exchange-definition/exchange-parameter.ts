@@ -11,11 +11,6 @@ Blockly.Blocks.exchange_parameter = {
 		/** Update receive dropdown based on PAY_TOKEN_LIST value */
 		const payToken = this.getFieldValue('PAY_TOKEN_LIST');
 		const receiveDropdown = this.getField('RECEIVE_TOKEN_LIST');
-		const receiveDropdownOptions = JupStore.getState()?.getAvailablePairedTokenDropdown(payToken);
-		if (!receiveDropdownOptions) return;
-
-		receiveDropdown.updateMenu(receiveDropdownOptions);
-		receiveDropdown.setValue(receiveDropdownOptions?.[0].value);
 	},
 	definition() {
 		const _this = this;
@@ -30,9 +25,7 @@ Blockly.Blocks.exchange_parameter = {
 				{
 					type: 'custom_dropdown',
 					name: 'RECEIVE_TOKEN_LIST',
-					options: () =>
-						JupStore.getState()?.getAvailablePairedTokenDropdown(_this.getFieldValue('PAY_TOKEN_LIST')) ??
-						[],
+					options: JupStore.getState().getTokensDropdown() ?? [],
 				},
 			],
 			colour: '#4E6882',

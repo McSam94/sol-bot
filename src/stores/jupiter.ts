@@ -1,13 +1,14 @@
 import JSBI from 'jsbi';
-import { Cluster, Connection, PublicKey } from '@solana/web3.js';
-import { Jupiter, RouteInfo, SwapResult, TOKEN_LIST_URL } from '@jup-ag/core';
-import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
+import { DefaultApi, QuoteResponse, createJupiterApiClient } from '@jup-ag/api';
 import create from 'zustand/vanilla';
-import { NETWORK, RPC_ENDPOINT } from '@constants/connection';
-import { ROUTES_PROPS } from '@constants/routes';
 import { CustomDropdownOption } from '@blockly/fields/dropdown';
 import { convertStoreToHooks } from '@utils/store';
 import { fromDecimal, toDecimal } from '@utils/number';
+import { Connection, PublicKey, VersionedTransaction } from '@solana/web3.js';
+import promiseRetry from 'promise-retry';
+import { TransactionError, handleSendTransaction } from '@mercurial-finance/optimist';
+import { IDL_V6 } from 'src/idl/jupiter6';
+import { JUPITER_PROGRAM_V6_ID } from '@constants/program';
 
 export interface Token {
 	chainId: number;
@@ -42,29 +43,25 @@ interface TransactionHistory {
 	};
 }
 
-interface TransactionError {
+interface TransactionErrorUI {
 	dateTime: Date;
 	message: string;
 	txid: string | null;
 }
 
 interface JupStoreInt {
-	jupiter: Jupiter | null;
-	routeMap: Map<string, string[]> | null;
-	computedRoutes: Array<RouteInfo> | null;
+	jupiter: DefaultApi | null;
+	quote: QuoteResponse | null;
 	cacheSecond: number;
 	tokens: Array<Token> | null;
 	blocklyState: BlocklyState;
 	transactions: Array<TransactionHistory> | null;
-	errors: Array<TransactionError> | null;
+	errors: Array<TransactionErrorUI> | null;
 	swapResult: boolean | null;
 	init: () => Promise<void>;
 	getTokensDropdown: () => Array<CustomDropdownOption> | undefined;
-	getAvailablePairedTokenDropdown: (inputMint: string) => Array<CustomDropdownOption> | undefined;
-	getRoutePropDropdown: () => Array<CustomDropdownOption> | undefined;
-	getComputedRoutes: () => Promise<Array<RouteInfo> | null>;
-	setWallet: (wallet: SignerWalletAdapter) => void;
-	exchange: (wallet: SignerWalletAdapter) => Promise<void>;
+	getComputedRoutes: () => Promise<QuoteResponse | null>;
+	exchange: (wallet: PublicKey, connection: Connection) => Promise<void>;
 	clearTransaction: () => void;
 	clearErrors: () => void;
 }
@@ -82,8 +79,7 @@ const initialBlocklyState = {
 const JupStore = create<JupStoreInt>((set, get) => ({
 	jupiter: null,
 	wallet: null,
-	routeMap: null,
-	computedRoutes: null,
+	quote: null,
 	cacheSecond: 0,
 	tokens: null,
 	transactions: null,
@@ -91,13 +87,9 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 	blocklyState: initialBlocklyState,
 	swapResult: null,
 	init: async () => {
-		const tokens = await fetch(TOKEN_LIST_URL[NETWORK as Cluster]).then(res => res.json());
-		const jupiter = await Jupiter.load({
-			connection: new Connection(RPC_ENDPOINT),
-			cluster: NETWORK as Cluster,
-		});
-		const routeMap = jupiter.getRouteMap();
-		set({ jupiter, tokens, routeMap });
+		const tokens = await fetch('https://token.jup.ag/all').then(res => res.json());
+		const jupiter = await createJupiterApiClient();
+		set({ jupiter, tokens });
 	},
 	getTokensDropdown: () =>
 		get().tokens?.map(({ logoURI, name, symbol, address }) => ({
@@ -105,28 +97,6 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 			label: `${name} (${symbol})`,
 			value: address,
 		})),
-	getAvailablePairedTokenDropdown: (inputMint: string) => {
-		const { tokens, routeMap } = get();
-		const possiblePairedToken = routeMap?.get(inputMint);
-
-		return possiblePairedToken
-			?.map(address => {
-				const token = tokens?.find(token => token.address === address);
-
-				if (!token) return undefined;
-
-				return {
-					img: token.logoURI,
-					label: `${token.name} (${token.symbol})`,
-					value: token.address,
-				};
-			})
-			.filter(Boolean);
-	},
-	getRoutePropDropdown: () =>
-		Object.entries(ROUTES_PROPS)
-			.map(([key, value]) => ({ label: key, value }))
-			.filter(Boolean),
 	getComputedRoutes: async () => {
 		const { blocklyState, jupiter } = get();
 
@@ -137,44 +107,58 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 		if (!inputToken || !outputToken || !amountNum || !slippageNum) return null;
 
 		const inputAmountLamport = toDecimal(amountNum, inputToken.decimals);
-		const newComputedRoutes: Array<RouteInfo> | null =
-			(
-				await jupiter?.computeRoutes({
-					inputMint: new PublicKey(inputToken.address),
-					outputMint: new PublicKey(outputToken.address),
-					amount: JSBI.BigInt(inputAmountLamport),
-					slippage: slippageNum,
-					forceFetch: true,
-				})
-			)?.routesInfos ?? null;
+		const quote = await jupiter?.quoteGet({
+			inputMint: inputToken.address,
+			outputMint: outputToken.address,
+			amount: inputAmountLamport,
+			slippageBps: slippageNum,
+			onlyDirectRoutes: false,
+			asLegacyTransaction: false,
+		});
 
 		// JsInterpreter can't convert RouteInfo properly so passed through zustand
-		set({ computedRoutes: newComputedRoutes });
-		return newComputedRoutes;
-	},
-	setWallet: (wallet: SignerWalletAdapter) => {
-		const { jupiter } = get();
+		set({ quote });
 
-		jupiter?.setUserPublicKey(wallet.publicKey ?? PublicKey.default);
-		set({ jupiter });
+		if (!quote) return null;
+
+		return quote;
 	},
-	exchange: async (wallet: SignerWalletAdapter) => {
-		const { jupiter, computedRoutes, blocklyState } = get();
+	exchange: async (wallet: PublicKey, connection: Connection) => {
+		const { jupiter, quote, blocklyState } = get();
 
 		if (!jupiter) throw new Error('Jupiter not initialized');
-		if (!computedRoutes) throw new Error('Best route not found');
+		if (!quote) throw new Error('Route not found');
 		if (!wallet) throw new Error('Wallet not found');
 
-		const bestRoute = computedRoutes[0];
-		const { execute } = await jupiter?.exchange({
-			routeInfo: bestRoute,
-		});
+		const swapResult = await promiseRetry(
+			retry =>
+				jupiter
+					?.swapPost({
+						swapRequest: {
+							quoteResponse: quote,
+							userPublicKey: wallet.toBase58(),
+							wrapAndUnwrapSol: true,
+							dynamicComputeUnitLimit: true,
+						},
+					})
+					.catch(async res => {
+						try {
+							// probably an error with the quote so we dont retry
+							const { error } = await res.json();
+							return { error: new TransactionError(error) };
+						} catch (e) {
+							// probably json is not parsable or the res is not an response object.
+							return retry({
+								error: new TransactionError('Unknown error'),
+							});
+						}
+					}),
+			{
+				retries: 1,
+				minTimeout: 100,
+			}
+		);
 
-		const swapResult: SwapResult = await execute({
-			wallet,
-		});
-
-		const dateTime = new Date();
 		if ('error' in swapResult) {
 			const { error } = swapResult;
 			if (!error) return;
@@ -186,28 +170,54 @@ const JupStore = create<JupStoreInt>((set, get) => ({
 			throw new Error(error?.message ?? 'Unknown error');
 		}
 
-		if ('txid' in swapResult) {
-			const { inputToken, outputToken, slippage } = blocklyState;
-			const { inAmount, outAmount } = bestRoute;
+		const swapTransactionBuf = Buffer.from(swapResult.swapTransaction, 'base64');
+		const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
+
+		const dateTime = new Date();
+		const blockhashWithExpiryBlockHeight = {
+			blockhash: transaction.message.recentBlockhash,
+			lastValidBlockHeight: swapResult.lastValidBlockHeight,
+		};
+		try {
+			const transactionResponse = await handleSendTransaction({
+				...blockhashWithExpiryBlockHeight,
+				connection,
+				signedTransaction: transaction,
+				idl: IDL_V6,
+				idlProgramId: JUPITER_PROGRAM_V6_ID,
+				skipPreflight: true,
+			});
+
+			if ('txid' in transactionResponse) {
+				const { inputToken, outputToken, slippage } = blocklyState;
+				const { inAmount, outAmount } = quote;
+				set(prevState => ({
+					...prevState,
+					transactions: [
+						{
+							dateTime,
+							txid: transactionResponse?.txid ?? '',
+							param: {
+								inputToken,
+								outputToken,
+								inAmount: fromDecimal(Number(inAmount), inputToken?.decimals ?? 0),
+								outAmount: fromDecimal(Number(outAmount), outputToken?.decimals ?? 0),
+								slippage: slippage ?? 0,
+								routes: quote.routePlan.map(plan => plan.swapInfo.label ?? ''),
+							},
+						},
+						...(prevState.transactions ?? []),
+					],
+					swapResult: true,
+				}));
+			}
+		} catch (error: any) {
 			set(prevState => ({
 				...prevState,
-				transactions: [
-					{
-						dateTime,
-						txid: swapResult.txid,
-						param: {
-							inputToken,
-							outputToken,
-							inAmount: fromDecimal(JSBI.toNumber(inAmount), inputToken?.decimals ?? 0),
-							outAmount: fromDecimal(JSBI.toNumber(outAmount), outputToken?.decimals ?? 0),
-							slippage: slippage ?? 0,
-							routes: bestRoute.marketInfos.map(marketInfo => marketInfo.amm.label),
-						},
-					},
-					...(prevState.transactions ?? []),
-				],
-				swapResult: true,
+				errors: [{ dateTime, message: error.message, txid: error.txid ?? null }, ...(prevState.errors ?? [])],
+				swapResult: false,
 			}));
+			throw new Error(error?.message ?? 'Unknown error');
 		}
 	},
 	clearTransaction: () => set({ transactions: [] }),

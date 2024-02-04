@@ -1,4 +1,3 @@
-import { PublicKey } from '@solana/web3.js';
 import { ENV, TokenInfo } from '@solana/spl-token-registry';
 
 export const WRAPPED_SOL: TokenInfo = {

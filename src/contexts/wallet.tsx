@@ -2,11 +2,11 @@ import * as React from 'react';
 import { WalletProvider } from '@solana/wallet-adapter-react';
 import {
 	CoinbaseWalletAdapter,
-	GlowWalletAdapter,
+	CloverWalletAdapter,
 	PhantomWalletAdapter,
 	SolflareWalletAdapter,
 	TorusWalletAdapter,
-	SolletExtensionWalletAdapter,
+	GlowWalletAdapter,
 	SolletWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
@@ -24,10 +24,10 @@ const SolanaProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 			}),
 			new CoinbaseWalletAdapter(),
 			new PhantomWalletAdapter(),
+			new CloverWalletAdapter(),
+			new SolflareWalletAdapter({ network: NETWORK }),
 			new GlowWalletAdapter(),
 			new SolletWalletAdapter({ network: NETWORK }),
-			new SolletExtensionWalletAdapter({ network: NETWORK }),
-			new SolflareWalletAdapter({ network: NETWORK }),
 			new TorusWalletAdapter(),
 		],
 		[]
